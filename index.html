@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beacon TV</title>
+
+    <link rel="icon" type="image/png" href="Image/Beacon TV Logo.png">
+
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div id="alertOverlay" class="alert-overlay" onclick="closeAlert()">
+        <div class="alert-content">
+            <img id="alertImage" src="Image/Beacon TV Warning.png" alt="Channel Tidak Tersedia">
+            <p>Klik di mana saja untuk kembali</p>
+        </div>
+    </div>
+
+    <header>
+        <div class="logo-container">
+            <img src="Image/Beacon TV Logo.png" alt="Beacon TV Logo" class="main-logo">
+            <div class="logo-text">
+                Beacon TV <span class="live-badge">LIVE</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <section class="video-section">
+            <div class="video-container">
+                <video id="videoPlayer" controls autoplay></video>
+            </div>
+            <div class="video-info">
+                <h2 id="currentChannelTitle">Pilih Channel...</h2>
+                <p>Status: <span id="status">Online</span></p>
+            </div>
+        </section>
+
+        <aside class="sidebar">
+            <h3>Daftar Channel</h3>
+            <div id="channelList" class="channel-list">
+                </div>
+        </aside>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>

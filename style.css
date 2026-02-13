@@ -1,0 +1,141 @@
+/* Reset & Dasar */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    /* Background Gambar dengan Overlay Gelap */
+    background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('Image/Endless\ For\ Beacon\ Background\ \(2024\ -\ 2028\).png');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    color: #ffffff;
+    min-height: 100vh;
+}
+
+header {
+    background-color: rgba(20, 20, 20, 0.9);
+    padding: 0.8rem 2rem;
+    border-bottom: 2px solid #e50914;
+}
+
+/* Header Logo & Live Badge */
+.logo-container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.main-logo {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+}
+
+.logo-text {
+    display: flex;
+    align-items: center;
+    font-size: 1.5rem;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+/* Transformasi Tulisan LIVE menjadi Elemen Badge */
+.live-badge {
+    background-color: #e50914;
+    color: white;
+    padding: 2px 10px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 800;
+    margin-left: 10px;
+    letter-spacing: 1.5px;
+    animation: blinker 1.5s linear infinite; /* Efek berkedip */
+}
+
+@keyframes blinker {
+    50% { opacity: 0.3; }
+}
+
+/* Layout */
+.main-container {
+    display: flex;
+    flex-wrap: wrap;
+    height: calc(100vh - 65px);
+}
+
+.video-section {
+    flex: 3;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    flex-direction: column;
+}
+
+.video-container {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+video { width: 100%; max-height: 80vh; }
+
+.video-info {
+    padding: 20px;
+    background: rgba(20, 20, 20, 0.8);
+    backdrop-filter: blur(10px);
+}
+
+/* Sidebar & Card */
+.sidebar {
+    flex: 1;
+    min-width: 300px;
+    background-color: rgba(24, 24, 24, 0.8);
+    backdrop-filter: blur(10px);
+    border-left: 1px solid rgba(255, 255, 255, 0.1);
+    overflow-y: auto;
+}
+
+.sidebar h3 { padding: 20px; border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
+
+.channel-card {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    margin: 10px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.channel-card:hover {
+    background: rgba(229, 9, 20, 0.4);
+    transform: translateX(5px);
+}
+
+.channel-card img {
+    width: 50px; height: 50px;
+    border-radius: 5px; margin-right: 15px;
+    object-fit: contain; background: #fff;
+}
+
+/* Alert Overlay */
+.alert-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.95);
+    z-index: 9999;
+    justify-content: center; align-items: center;
+}
+
+.alert-content img { max-width: 80%; border-radius: 10px; }
+
+@media (max-width: 768px) {
+    .main-container { flex-direction: column; height: auto; }
+}
