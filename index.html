@@ -4,45 +4,56 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Beacon TV</title>
-
     <link rel="icon" type="image/png" href="Image/Beacon TV Logo.png">
-
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <div id="alertOverlay" class="alert-overlay" onclick="closeAlert()">
-        <div class="alert-content">
-            <img id="alertImage" src="Image/Beacon TV Warning.png" alt="Channel Tidak Tersedia">
-            <p>Klik di mana saja untuk kembali</p>
-        </div>
-    </div>
-
     <header>
         <div class="logo-container">
-            <img src="Image/Beacon TV Logo.png" alt="Beacon TV Logo" class="main-logo">
-            <div class="logo-text">
-                Beacon TV <span class="live-badge">LIVE</span>
-            </div>
+            <img src="Image/Beacon TV Logo.png" alt="Logo" class="main-logo">
+            <div class="logo-text">Beacon TV <span class="live-badge">LIVE</span></div>
         </div>
     </header>
 
     <main class="main-container">
+        <aside class="sidebar side-left">
+            <h3>Daftar Channel</h3>
+            <div id="channelList" class="channel-list"></div>
+        </aside>
+
         <section class="video-section">
-            <div class="video-container">
+            <div class="video-wrapper" id="videoWrapper">
                 <video id="videoPlayer" controls autoplay></video>
+                
+                <div id="errorOverlay" class="error-screen">
+                    <img src="Image/Beacon TV Warning.png" alt="Channel Offline">
+                    <div class="error-text">
+                        <h3>CHANNEL TIDAK TERSEDIA</h3>
+                        <p>Mohon maaf, stasiun TV ini sedang tidak tersedia atau telah hengkang.</p>
+                    </div>
+                </div>
             </div>
-            <div class="video-info">
-                <h2 id="currentChannelTitle">Pilih Channel...</h2>
-                <p>Status: <span id="status">Online</span></p>
+            
+            <div class="video-controls-bar">
+                <div class="info-text">
+                    <h2 id="currentChannelTitle">Pilih Channel...</h2>
+                    <div class="video-controls-bar">
+
+            <div class="info-text">
+                    <p id="statusDisplay">Status: <span style="color: #00ff00;">Online</span></p>
+                </div>
+                    <button id="pipButton" class="btn-pip">📺 Mode Melayang</button>
+                </div>
             </div>
         </section>
 
-        <aside class="sidebar">
-            <h3>Daftar Channel</h3>
-            <div id="channelList" class="channel-list">
-                </div>
+        <aside class="sidebar side-right">
+            <h3>Live Chat</h3>
+            <div class="chat-container">
+                <iframe src="https://chatroll.com/embed/chat/beacon-tv?id=jwW8OTT7nL_&platform=html"width="100%" height="100%" frameborder="0" scrolling="no" allowtransparency="true"></iframe>
+            </div>
         </aside>
     </main>
 
