@@ -142,7 +142,7 @@ body {
 }
 
 .bg-dark-glass {
-    background-color: #141414;
+    background-color: lab(73.03% -38.88 -11.48);
 }
 
 .auth-tabs-wrapper {
