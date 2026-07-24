@@ -1,22 +1,27 @@
-/* Styling Utama */
+/* ==========================================
+   STYLING UTAMA HALAMAN & BACKGROUND GAMBAR
+   ========================================== */
 body {
-    background-image: linear-gradient(rgba(18, 18, 18, 0.85), rgba(18, 18, 18, 0.85)), url('Image/Endless\ For\ Beacon\ Background\ \(2024\ -\ 2028\).png');
+    background-image: linear-gradient(rgba(18, 18, 18, 0.88), rgba(18, 18, 18, 0.88)), url('Image/Endless\ For\ Beacon\ Background\ \(2024\ -\ 2028\).png');
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
     background-repeat: no-repeat;
     color: #ffffff;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    min-height: 100vh;
 }
 
 .navbar {
     background-color: rgba(26, 26, 26, 0.95) !important;
-    border-bottom: 2px solid #ff4757;
     backdrop-filter: blur(5px);
 }
 
+/* ==========================================
+   VIDEO PLAYER & OVERLAY
+   ========================================== */
 .player-container {
-    background-color: #000;
+    background-color: #000000;
     border-radius: 12px;
     overflow: hidden;
     box-shadow: 0 8px 30px rgba(0, 0, 0, 0.7);
@@ -54,7 +59,7 @@ body {
     box-shadow: 0 0 25px rgba(255, 71, 87, 0.7) !important;
 }
 
-/* OVERLAY BLACKOUT SCTE-35 / AUTO DETECT */
+/* OVERLAY BLACKOUT EXPIRED */
 #blackout-overlay {
     background-color: rgba(10, 10, 10, 0.96);
     backdrop-filter: blur(8px);
@@ -77,6 +82,9 @@ body {
     max-width: 500px;
 }
 
+/* ==========================================
+   SIDEBAR DAFTAR TV
+   ========================================== */
 .channel-list {
     max-height: 480px;
     overflow-y: auto;
@@ -104,12 +112,119 @@ body {
 
 .channel-item.active {
     background-color: #ff4757;
-    color: white;
+    color: #ffffff;
     font-weight: bold;
 }
 
+.channel-item.expired-item {
+    opacity: 0.75;
+}
+
+/* ==========================================
+   STYLING AUTH CARD & MODAL (GLASSMORPHISM)
+   ========================================== */
+.auth-card {
+    border-radius: 20px !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8) !important;
+}
+
+.auth-sidebar {
+    background: linear-gradient(135deg, #1e0507 0%, #0a0a0a 100%);
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.auth-sidebar-overlay {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: radial-gradient(circle at top left, rgba(255, 71, 87, 0.25), transparent 70%);
+    pointer-events: none;
+}
+
+.bg-dark-glass {
+    background-color: #141414;
+}
+
+.auth-tabs-wrapper {
+    display: flex;
+    background-color: rgba(255, 255, 255, 0.05);
+    padding: 4px;
+    border-radius: 50px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.auth-tab-btn {
+    border: none;
+    background: transparent;
+    color: #a0a0a0;
+    padding: 6px 18px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    border-radius: 50px;
+    transition: all 0.3s ease;
+}
+
+.auth-tab-btn.active {
+    background-color: #ff4757;
+    color: #ffffff;
+    box-shadow: 0 4px 15px rgba(255, 71, 87, 0.4);
+}
+
+.modern-input-group {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-icon {
+    position: absolute;
+    left: 14px;
+    color: #ff4757;
+    font-size: 0.95rem;
+    z-index: 5;
+}
+
+.modern-input {
+    background-color: rgba(255, 255, 255, 0.04) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    color: #ffffff !important;
+    padding-left: 42px !important;
+    height: 44px;
+    border-radius: 12px !important;
+    font-size: 0.9rem;
+    transition: all 0.25s ease;
+}
+
+.modern-input:focus {
+    border-color: #ff4757 !important;
+    box-shadow: 0 0 12px rgba(255, 71, 87, 0.3) !important;
+    background-color: rgba(255, 255, 255, 0.07) !important;
+}
+
+.shadow-danger {
+    box-shadow: 0 6px 20px rgba(255, 71, 87, 0.35);
+    transition: all 0.3s ease;
+}
+
+.shadow-danger:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(255, 71, 87, 0.5);
+}
+
+.py-2-5 {
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.text-light-50 {
+    color: rgba(255, 255, 255, 0.65);
+}
+
+/* ==========================================
+   FOOTER & SCROLLBAR
+   ========================================== */
 .footer-custom {
-    background-color: rgba(4, 247, 206, 0.95);
+    background-color: rgba(18, 18, 18, 0.95);
     backdrop-filter: blur(5px);
 }
 
@@ -134,13 +249,6 @@ body {
     box-shadow: 0 5px 15px rgba(255, 71, 87, 0.4);
 }
 
-::-webkit-scrollbar {
-    width: 6px;
-}
-::-webkit-scrollbar-track {
-    background: #1a1a1a;
-}
-::-webkit-scrollbar-thumb {
-    background: #ff4757;
-    border-radius: 10px;
-}
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #1a1a1a; }
+::-webkit-scrollbar-thumb { background: #ff4757; border-radius: 10px; }

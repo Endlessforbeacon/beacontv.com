@@ -1,56 +1,109 @@
-// DATA CHANNEL TV
+// Import Firebase SDK (Modular v10+)
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { 
+    getAuth, 
+    createUserWithEmailAndPassword, 
+    signInWithEmailAndPassword, 
+    signOut, 
+    onAuthStateChanged,
+    updateProfile 
+} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+// ==========================================
+// KONFIGURASI FIREBASE BEACON TV
+// ==========================================
+const firebaseConfig = {
+    apiKey: "AIzaSyAnVMmhW6_-gjFWZPYoFisoKXCM46qMb8c",
+    authDomain: "beacon-tv-926fb.firebaseapp.com",
+    projectId: "beacon-tv-926fb",
+    storageBucket: "beacon-tv-926fb.firebasestorage.app",
+    messagingSenderId: "372003061472",
+    appId: "1:372003061472:web:d57dbec882701a41221a85"
+};
+
+// Inisialisasi Firebase Auth
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+// ==========================================
+// DATA CHANNEL BEACON TV
+// ==========================================
 const channels = [
     {
         name: "Endless For Beacon TV",
         url: "http://127.0.0.1:8000/stream/channels/1.m3u8",
         poster: "Image/Beacon TV Thumbnail/Endless For Beacon TV.png",
-        allowedCountries: ["ID"]
+        allowedCountries: ["ID"],
+        isEndlessOwned: true
     },
     {
         name: "Beacon Hype",
         url: "https://k-s.tvri.go.id/live/tvri.m3u8",
         poster: "logo-tvri.jpg",
-        allowedCountries: ["ID"]
+        allowedCountries: ["ID"],
+        isEndlessOwned: true
     },
     {
         name: "Endless For Beacon Sports Channel",
         url: "https://live.antaranews.com/hls/live.m3u8",
         poster: "logo-antara.jpg",
-        allowedCountries: ["ID"]
+        allowedCountries: ["ID"],
+        isEndlessOwned: true
     },
     {
         name: "Endless For Beacon Music Channels",
         url: "https://live.antaranews.com/hls/live.m3u8",
         poster: "logo-antara.jpg",
-        allowedCountries: ["ID"]
+        allowedCountries: ["ID"],
+        isEndlessOwned: true
     },
     {
         name: "Beacon Sports Channel 2",
         url: "https://live.antaranews.com/hls/live.m3u8",
         poster: "logo-antara.jpg",
-        allowedCountries: ["ID"]
+        allowedCountries: ["ID"],
+        isEndlessOwned: true
     },
     {
         name: "Endless For Beacon Food & Travel Time",
         url: "https://live.antaranews.com/hls/live.m3u8",
         poster: "logo-antara.jpg",
-        allowedCountries: ["ID"]
+        allowedCountries: ["ID"],
+        isEndlessOwned: true
     },
     {
-        name: "Beacon Super Basket TV",
+        name: "Beacon Kids TV",
         url: "https://live.antaranews.com/hls/live.m3u8",
         poster: "logo-antara.jpg",
-        allowedCountries: ["ID"]
+        allowedCountries: ["ID"],
+        isEndlessOwned: true
     },
     {
         name: "Endless For Beacon Drama & Movies",
         url: "https://live.antaranews.com/hls/live.m3u8",
         poster: "logo-antara.jpg",
-        allowedCountries: ["ID"]
+        allowedCountries: ["ID"],
+        isEndlessOwned: true
+    },
+    {
+        name: "TVRI",
+        url: "https://live.antaranews.com/hls/live.m3u8",
+        poster: "Image/Beacon TV Thumbnail/TVRI.png",
+        allowedCountries: ["ID"],
+        isEndlessOwned: false,
+        expiryDate: "2026-07-21T00:00:00"
+    },
+    {
+        name: "MDTV",
+        url: "https://live.antaranews.com/hls/live.m3u8",
+        poster: "Image/Beacon TV Thumbnail/MDTV.png",
+        allowedCountries: ["ID"],
+        isEndlessOwned: false,
+        expiryDate: "2025-04-11T00:00:00"
     },
 ];
 
-// Elemen DOM
+// DOM Elements
 const video = document.getElementById('video-player');
 const playTitle = document.getElementById('playing-title');
 const channelsContainer = document.getElementById('channels-container');
@@ -68,59 +121,142 @@ let selectedChannel = null;
 let userCountry = "UNKNOWN";
 
 // ==========================================
-// 1. SISTEM DETEKSI OTOMATIS HAK SIAR (MANIFEST SCANNER)
+// 1. FIREBASE AUTH LOGIC & EVENT LISTENERS
 // ==========================================
-async function scanHLSManifestForRights(streamUrl) {
-    // Kata kunci penanda hak siar di dalam file manifest HLS/SCTE-35
-    const copyrightMarkers = [
-        "EXT-X-CUE-OUT",      // Penanda resmi SCTE-35 Siaran Dibatasi/Iklan Terikat
-        "EXT-OATCLS-SCTE35",  // SCTE-35 Broadcast Tag
-        "BLACKOUT=YES",       // Tag khusus streaming CDN
-        "RESTRICTED",         // Tag Restriksi
-        "RIGHTS_BLOCKED"
-    ];
+const btnAuthAction = document.getElementById('btn-auth-action');
+const tabLoginBtn = document.getElementById('tab-login-btn');
+const tabRegisterBtn = document.getElementById('tab-register-btn');
+const loginForm = document.getElementById('loginForm');
+const registerForm = document.getElementById('registerForm');
+const authAlert = document.getElementById('authAlert');
 
-    const sportsKeywords = [
-        "MATCH", "LEAGUE", "CHAMPIONSHIP", "WORLD-CUP", "OLYMPICS", "PREMIER-LEAGUE"
-    ];
+// Switch Tab Login / Register
+tabLoginBtn.addEventListener('click', () => {
+    tabLoginBtn.classList.add('active');
+    tabRegisterBtn.classList.remove('active');
+    loginForm.classList.remove('d-none');
+    registerForm.classList.add('d-none');
+    authAlert.classList.add('d-none');
+});
+
+tabRegisterBtn.addEventListener('click', () => {
+    tabRegisterBtn.classList.add('active');
+    tabLoginBtn.classList.remove('active');
+    registerForm.classList.remove('d-none');
+    loginForm.classList.add('d-none');
+    authAlert.classList.add('d-none');
+});
+
+// Buka Modal Auth / Logout
+btnAuthAction.addEventListener('click', () => {
+    if (auth.currentUser) {
+        if (confirm("Apakah Anda yakin ingin keluar dari akun Beacon TV?")) {
+            signOut(auth);
+        }
+    } else {
+        const authModal = new bootstrap.Modal(document.getElementById('authModal'));
+        authModal.show();
+    }
+});
+
+// Register User
+registerForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const name = document.getElementById('regName').value;
+    const email = document.getElementById('regEmail').value;
+    const password = document.getElementById('regPassword').value;
 
     try {
-        const response = await fetch(streamUrl);
-        if (!response.ok) return { isBlocked: false };
-
-        const manifestText = await response.text();
-        const upperManifest = manifestText.toUpperCase();
-
-        // 1. Cek SCTE-35 / Marker Siaran Terikat
-        const hasSCTE35Marker = copyrightMarkers.some(marker => upperManifest.includes(marker));
-        if (hasSCTE35Marker) {
-            return {
-                isBlocked: true,
-                reason: "Sistem mendeteksi SCTE-35 Digital Cue-Out (Sinyal otomatis pemblokiran hak siar dari stasiun TV).",
-                code: "SCTE35-AUTO-BLACKOUT"
-            };
-        }
-
-        // 2. Cek Kata Kunci Sensitif pada URL / Segment Manifest
-        const hasSportsKeyword = sportsKeywords.some(keyword => upperManifest.includes(keyword));
-        if (hasSportsKeyword) {
-            return {
-                isBlocked: true,
-                reason: "Aliran data video teridentifikasi mengandung segmen program olahraga/film ber-hak siar.",
-                code: "STREAM-KEYWORD-BLACKOUT"
-            };
-        }
-
-        return { isBlocked: false };
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        await updateProfile(userCredential.user, { displayName: name });
+        
+        showAuthAlert("Akun berhasil dibuat! Mengalihkan...", "success");
+        setTimeout(() => {
+            const modalEl = document.getElementById('authModal');
+            const modalInstance = bootstrap.Modal.getInstance(modalEl);
+            if (modalInstance) modalInstance.hide();
+        }, 1500);
 
     } catch (error) {
-        console.warn("Pemeriksaan otomatis manifest gagal (CORS/Network), meloloskan ke player:", error);
-        return { isBlocked: false };
+        showAuthAlert(getFirebaseErrorMessage(error.code), "danger");
+    }
+});
+
+// Login User
+loginForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = document.getElementById('loginEmail').value;
+    const password = document.getElementById('loginPassword').value;
+
+    try {
+        await signInWithEmailAndPassword(auth, email, password);
+        showAuthAlert("Berhasil masuk! Selamat datang.", "success");
+        setTimeout(() => {
+            const modalEl = document.getElementById('authModal');
+            const modalInstance = bootstrap.Modal.getInstance(modalEl);
+            if (modalInstance) modalInstance.hide();
+        }, 1500);
+
+    } catch (error) {
+        showAuthAlert(getFirebaseErrorMessage(error.code), "danger");
+    }
+});
+
+// Observer Status Login User
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+        const name = user.displayName || user.email.split('@')[0];
+        btnAuthAction.className = "btn btn-outline-light btn-sm rounded-pill px-3 fw-bold";
+        btnAuthAction.innerHTML = `<i class="fa-solid fa-user-check text-success me-1"></i> ${name}`;
+    } else {
+        btnAuthAction.className = "btn btn-danger btn-sm rounded-pill px-3 fw-bold";
+        btnAuthAction.innerHTML = `<i class="fa-solid fa-right-to-bracket me-1"></i> Masuk`;
+    }
+});
+
+function showAuthAlert(msg, type) {
+    authAlert.className = `alert alert-${type} py-2 small fw-bold mb-3`;
+    authAlert.textContent = msg;
+    authAlert.classList.remove('d-none');
+}
+
+function getFirebaseErrorMessage(code) {
+    switch (code) {
+        case 'auth/email-already-in-use': return 'Email ini sudah terdaftar.';
+        case 'auth/invalid-email': return 'Format email tidak valid.';
+        case 'auth/weak-password': return 'Kata sandi minimal 6 karakter.';
+        case 'auth/invalid-credential': return 'Email atau kata sandi salah.';
+        default: return 'Terjadi kesalahan. Silakan coba lagi.';
     }
 }
 
 // ==========================================
-// 2. DETEKSI LOKASI IP (GEOBLOCKING)
+// 2. LOGIKA HAK SIAR & MASA TENGGANG (30 HARI)
+// ==========================================
+function isStreamAllowed(channel) {
+    if (channel.isEndlessOwned) return true;
+    if (!channel.expiryDate) return true;
+
+    const now = new Date();
+    const expiry = new Date(channel.expiryDate);
+
+    return now < expiry;
+}
+
+function isVisibleInList(channel) {
+    if (channel.isEndlessOwned) return true;
+    if (!channel.expiryDate) return true;
+
+    const now = new Date();
+    const expiry = new Date(channel.expiryDate);
+    const thirtyDaysInMs = 30 * 24 * 60 * 60 * 1000;
+    const hideDate = new Date(expiry.getTime() + thirtyDaysInMs);
+
+    return now < hideDate;
+}
+
+// ==========================================
+// 3. DETEKSI LOKASI IP (GEOBLOCKING)
 // ==========================================
 async function detectUserCountry() {
     try {
@@ -133,7 +269,7 @@ async function detectUserCountry() {
 }
 
 // ==========================================
-// 3. INISIALISASI PLYR
+// 4. INISIALISASI PLYR PLAYER & STREAM CONTROL
 // ==========================================
 function initPlyr() {
     plyrPlayer = new Plyr(video, {
@@ -142,18 +278,23 @@ function initPlyr() {
     });
 }
 
-// ==========================================
-// 4. PERSIAPAN STREAM & EKSEKUSI PEMERIKSAAN
-// ==========================================
-async function prepareStream(channel) {
+function prepareStream(channel) {
     selectedChannel = channel;
-    playTitle.textContent = "Memeriksa Keamanan Siaran: " + channel.name + "...";
 
     if (hls) { hls.destroy(); hls = null; }
     if (plyrPlayer) { plyrPlayer.stop(); }
     video.removeAttribute('src');
 
-    // === PENGECEKAN 1: GEOBLOCKING ===
+    if (!isStreamAllowed(channel)) {
+        showRestrictionScreen(
+            "Siaran Tidak Lagi Tersedia",
+            `Saluran ${channel.name} sudah tidak dapat diakses di Beacon TV dikarenakan adanya perubahan izin hak siar atau penyesuaian masa penayangan.`,
+            "LICENSE-EXPIRED-404"
+        );
+        playTitle.textContent = "Saluran Non-Aktif: " + channel.name;
+        return;
+    }
+
     const isGlobal = channel.allowedCountries.includes("ALL");
     const isCountryAllowed = channel.allowedCountries.includes(userCountry);
 
@@ -166,20 +307,6 @@ async function prepareStream(channel) {
         return;
     }
 
-    // === PENGECEKAN 2: OTOMATIS SCAN MANIFEST HLS / SCTE-35 ===
-    const autoRightsCheck = await scanHLSManifestForRights(channel.url);
-
-    if (autoRightsCheck.isBlocked) {
-        showRestrictionScreen(
-            "Program Dibatasi Otomatis",
-            `Saluran ${channel.name} tidak dapat diputar. ${autoRightsCheck.reason}`,
-            autoRightsCheck.code
-        );
-        playTitle.textContent = "Saluran Terpilih: " + channel.name + " (Terikat Hak Siar)";
-        return;
-    }
-
-    // Lolos Semua Pengecekan
     hideRestrictionScreen();
     playTitle.textContent = "Saluran Terpilih: " + channel.name;
 
@@ -206,44 +333,21 @@ function hideRestrictionScreen() {
     blackoutOverlay.classList.add('d-none');
 }
 
-// ==========================================
-// 5. JALANKAN STREAMING & REAL-TIME EVENT LISTENER
-// ==========================================
 function startStream() {
-    if (!selectedChannel) return;
+    if (!selectedChannel || !isStreamAllowed(selectedChannel)) return;
 
     playTitle.textContent = "Sedang Memutar: " + selectedChannel.name;
     playOverlay.style.setProperty('display', 'none', 'important');
 
-    const url = selectedChannel.url;
-
     if (Hls.isSupported()) {
         hls = new Hls();
-        hls.loadSource(url);
+        hls.loadSource(selectedChannel.url);
         hls.attachMedia(video);
-
         hls.on(Hls.Events.MANIFEST_PARSED, function() {
             plyrPlayer.play();
         });
-
-        // DETEKSI REAL-TIME: Jika saat ditonton mendadak ada sinyal Blackout SCTE-35
-        hls.on(Hls.Events.FRAG_PARSED, function(event, data) {
-            if (data.frag && data.frag.tagList) {
-                const tags = JSON.stringify(data.frag.tagList).toUpperCase();
-                if (tags.includes("EXT-X-CUE-OUT") || tags.includes("BLACKOUT")) {
-                    hls.stopLoad();
-                    plyrPlayer.stop();
-                    showRestrictionScreen(
-                        "Program Dibatasi Otomatis",
-                        "Siaran mendadak dibatasi secara otomatis karena stasiun TV mulai menayangkan program ber-hak siar.",
-                        "REALTIME-SCTE35-BLACKOUT"
-                    );
-                }
-            }
-        });
-
     } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-        video.src = url;
+        video.src = selectedChannel.url;
         video.addEventListener('loadedmetadata', function() {
             plyrPlayer.play();
         });
@@ -251,16 +355,37 @@ function startStream() {
 }
 
 // ==========================================
-// 6. RENDER MENU SIDEBAR
+// 5. RENDER DAFTAR SALURAN
 // ==========================================
 function initChannels() {
     channelsContainer.innerHTML = ''; 
+    const visibleChannels = channels.filter(isVisibleInList);
 
-    channels.forEach((channel, index) => {
+    if (visibleChannels.length === 0) {
+        channelsContainer.innerHTML = `<div class="p-3 text-muted text-center">Tidak ada saluran yang tersedia saat ini.</div>`;
+        return;
+    }
+
+    visibleChannels.forEach((channel) => {
         const item = document.createElement('div');
-        item.className = 'channel-item d-flex justify-content-between align-items-center';
-        item.innerHTML = `<span>${channel.name}</span> <i class="fa-solid fa-shield-cat text-muted fs-6" title="Auto Protection Enabled"></i>`;
-        item.setAttribute('data-index', index);
+        const isAllowed = isStreamAllowed(channel);
+        
+        item.className = `channel-item d-flex justify-content-between align-items-center ${!isAllowed ? 'expired-item' : ''}`;
+        
+        let badge = '';
+        if (channel.isEndlessOwned) {
+            badge = `<span class="badge bg-danger ms-2" style="font-size: 0.65rem;">OFFICIAL</span>`;
+        } else if (!isAllowed) {
+            badge = `<span class="badge bg-secondary ms-2" style="font-size: 0.65rem;">NON-AKTIF</span>`;
+        }
+
+        item.innerHTML = `
+            <div class="d-flex align-items-center">
+                <span>${channel.name}</span>
+                ${badge}
+            </div>
+            <i class="fa-solid fa-shield-cat text-muted fs-6"></i>
+        `;
         
         item.addEventListener('click', function() {
             document.querySelectorAll('.channel-item').forEach(el => el.classList.remove('active'));
@@ -271,15 +396,108 @@ function initChannels() {
         channelsContainer.appendChild(item);
     });
 
-    if (channels.length > 0) {
+    if (visibleChannels.length > 0) {
         channelsContainer.children[0].classList.add('active');
-        prepareStream(channels[0]);
+        prepareStream(visibleChannels[0]);
     }
 }
 
-window.onload = async function() {
+// ==========================================
+// 6. PUSAT LAPORAN BUG & KENDALA
+// ==========================================
+function openReportModal() {
+    const reportForm = document.getElementById('reportForm');
+    const alertBox = document.getElementById('reportAlert');
+    
+    reportForm.reset();
+    alertBox.classList.add('d-none');
+    document.getElementById('channelSelectContainer').classList.add('d-none');
+    
+    const reportModal = new bootstrap.Modal(document.getElementById('reportModal'));
+    reportModal.show();
+}
+
+document.getElementById('btn-open-report').addEventListener('click', openReportModal);
+document.getElementById('btn-report-channel').addEventListener('click', openReportModal);
+
+document.getElementById('reportCategory').addEventListener('change', function() {
+    const category = this.value;
+    const typeSelect = document.getElementById('reportType');
+    const channelContainer = document.getElementById('channelSelectContainer');
+    const channelInput = document.getElementById('reportChannelName');
+
+    typeSelect.innerHTML = '<option value="" selected disabled>-- Pilih Jenis Kendala --</option>';
+
+    if (category === 'system_bug') {
+        channelContainer.classList.add('d-none');
+        const bugOptions = [
+            { val: "ui_broken", text: "Tampilan / Layout Website Rusak" },
+            { val: "button_not_working", text: "Fitur / Tombol Tidak Mau Diklik" },
+            { val: "search_error", text: "Pencarian Saluran Tidak Berfungsi" },
+            { val: "player_controls_bug", text: "Kontrol Player Error" }
+        ];
+        bugOptions.forEach(opt => typeSelect.innerHTML += `<option value="${opt.val}">${opt.text}</option>`);
+
+    } else if (category === 'stream_issue') {
+        channelContainer.classList.remove('d-none');
+        channelInput.value = selectedChannel ? selectedChannel.name : 'Tidak Ada Saluran Dipilih';
+
+        const streamOptions = [
+            { val: "stream_offline", text: "Siaran Terputus / Black Screen / Offline" },
+            { val: "audio_issue", text: "Audio Mati / Suara Tidak Sinkron" },
+            { val: "video_lag", text: "Video Lag / Buffering Terus-Menerus" },
+            { val: "wrong_stream", text: "Acara Tidak Sesuai Nama Saluran" }
+        ];
+        streamOptions.forEach(opt => typeSelect.innerHTML += `<option value="${opt.val}">${opt.text}</option>`);
+
+    } else {
+        channelContainer.classList.add('d-none');
+        typeSelect.innerHTML += `<option value="general_feedback">Saran / Masukan Fitur</option>`;
+        typeSelect.innerHTML += `<option value="other">Lain-lain</option>`;
+    }
+});
+
+document.getElementById('reportForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const btnSubmit = document.getElementById('btnSubmitReport');
+    const alertBox = document.getElementById('reportAlert');
+    const category = document.getElementById('reportCategory').value;
+
+    btnSubmit.disabled = true;
+    btnSubmit.innerHTML = `<i class="fa-solid fa-spinner fa-spin me-1"></i> Mengirim Laporan...`;
+
+    setTimeout(() => {
+        btnSubmit.disabled = false;
+        btnSubmit.innerHTML = `<i class="fa-solid fa-paper-plane me-1"></i> Kirim Laporan`;
+
+        alertBox.className = "alert alert-success py-2 small fw-bold";
+        alertBox.textContent = "Laporan berhasil dikirim! Tim Beacon TV akan segera memeriksanya.";
+        alertBox.classList.remove('d-none');
+
+        setTimeout(() => {
+            const modalEl = document.getElementById('reportModal');
+            const modalInstance = bootstrap.Modal.getInstance(modalEl);
+            if (modalInstance) modalInstance.hide();
+        }, 2000);
+
+    }, 1000);
+});
+
+// ==========================================
+// 7. INITIALIZATION ON LOAD
+// ==========================================
+window.addEventListener('DOMContentLoaded', async () => {
     initPlyr();
     await detectUserCountry();
     initChannels();
     startStreamBtn.addEventListener('click', startStream);
-};
+});
+
+setInterval(() => {
+    if (selectedChannel && !selectedChannel.isEndlessOwned) {
+        if (!isStreamAllowed(selectedChannel)) {
+            prepareStream(selectedChannel);
+        }
+    }
+}, 5000);
