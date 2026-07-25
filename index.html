@@ -4,6 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Beacon TV - Streaming Platform</title>
+
+    <!-- FAVICON LOGO BEACON TV (Untuk Tab Browser & Address Bar) -->
+    <link rel="icon" type="image/x-icon" href="Image/Beacon TV Logo.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="Image/Beacon TV Logo.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="Image/Beacon TV Logo.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="Image/Beacon TV Logo.png">
     
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -179,55 +185,100 @@
         </div>
     </div>
 
-    <!-- MODAL REPORT (PUSAT LAPORAN BUG & KENDALA SISTEM) -->
-    <div class="modal fade" id="reportModal" tabindex="-1" aria-labelledby="reportModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content bg-dark text-light border-secondary shadow-lg">
-                <div class="modal-header border-secondary">
-                    <h5 class="modal-title d-flex align-items-center gap-2 fw-bold" id="reportModalLabel">
-                        <i class="fa-solid fa-triangle-exclamation text-danger"></i>
-                        Pusat Laporan & Bug Beacon TV
-                    </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
+    <!-- MODAL REPORT (PUSAT LAPORAN BUG & KENDALA - MODERN UI) -->
+    <div class="modal fade" id="reportModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content bg-dark text-light auth-card overflow-hidden">
+                <div class="row g-0">
+                    
+                    <!-- Sisi Kiri: Hero Banner -->
+                    <div class="col-md-4 auth-sidebar d-none d-md-flex flex-column justify-content-between p-4 position-relative">
+                        <div class="auth-sidebar-overlay"></div>
+                        <div class="position-relative z-1">
+                            <span class="badge bg-danger px-3 py-2 rounded-pill fw-bold mb-2">
+                                <i class="fa-solid fa-headset me-1"></i> SUPPORT CENTER
+                            </span>
+                            <h4 class="fw-bold text-white mt-2">Pusat Kendala & Bug</h4>
+                            <p class="text-light-50 small mb-0 mt-2">
+                                Temukan bug atau siaran bermasalah? Laporkan agar tim teknis **Beacon TV** bisa segera membereskannya!
+                            </p>
+                        </div>
+                        <div class="position-relative z-1">
+                            <div class="p-3 rounded-4 bg-dark-glass border border-secondary border-opacity-25">
+                                <div class="d-flex align-items-center gap-2 text-warning small fw-bold mb-1">
+                                    <i class="fa-solid fa-bolt"></i> Respon Cepat
+                                </div>
+                                <div class="text-light-50 fs-7">Laporan Anda langsung diteruskan ke log sistem pengawasan siaran.</div>
+                            </div>
+                        </div>
+                    </div>
 
-                <div class="modal-body">
-                    <form id="reportForm">
-                        <div class="mb-3">
-                            <label for="reportCategory" class="form-label text-warning fw-bold">Kategori Laporan <span class="text-danger">*</span></label>
-                            <select class="form-select bg-dark text-light border-secondary" id="reportCategory" required>
-                                <option value="" selected disabled>-- Pilih Kategori Laporan --</option>
-                                <option value="system_bug">Bug Fitur / Sistem Website (Tombol Error, UI Rusak, dll)</option>
-                                <option value="stream_issue">Kendala Siaran TV (Stream Offline, Audio Hilang, Buffering)</option>
-                                <option value="other_issue">Saran & Kendala Lainnya</option>
-                            </select>
+                    <!-- Sisi Kanan: Form Laporan -->
+                    <div class="col-md-8 p-4 p-lg-4 bg-dark-glass position-relative">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="fw-bold text-white mb-0 d-flex align-items-center gap-2">
+                                <i class="fa-solid fa-triangle-exclamation text-danger"></i> Kirimkan Laporan
+                            </h5>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
 
-                        <div class="mb-3 d-none" id="channelSelectContainer">
-                            <label for="reportChannelName" class="form-label text-muted small">Saluran TV Yang Bermasalah</label>
-                            <input type="text" class="form-control bg-secondary text-light border-0" id="reportChannelName" readonly>
-                        </div>
+                        <form id="reportForm">
+                            <!-- Kategori Cards -->
+                            <label class="form-label small text-muted fw-bold mb-2">PILIH KATEGORI MASALAH <span class="text-danger">*</span></label>
+                            <div class="row g-2 mb-3">
+                                <div class="col-4">
+                                    <div class="category-card" data-category="system_bug">
+                                        <i class="fa-solid fa-bug category-icon"></i>
+                                        <span class="category-label">Bug System</span>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="category-card" data-category="stream_issue">
+                                        <i class="fa-solid fa-tv category-icon"></i>
+                                        <span class="category-label">Kendala TV</span>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="category-card" data-category="other_issue">
+                                        <i class="fa-solid fa-comment-dots category-icon"></i>
+                                        <span class="category-label">Lainnya</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <input type="hidden" id="reportCategory" required>
 
-                        <div class="mb-3">
-                            <label for="reportType" class="form-label fw-bold">Jenis Kendala <span class="text-danger">*</span></label>
-                            <select class="form-select bg-dark text-light border-secondary" id="reportType" required>
-                                <option value="" selected disabled>-- Pilih Jenis Kendala --</option>
-                            </select>
-                        </div>
+                            <!-- Channel Dinamis -->
+                            <div class="mb-3 d-none" id="channelSelectContainer">
+                                <label class="form-label small text-muted fw-bold">SALURAN TERDAMPAK</label>
+                                <div class="modern-input-group">
+                                    <input type="text" class="form-control modern-input text-danger fw-bold" id="reportChannelName" readonly>
+                                </div>
+                            </div>
 
-                        <div class="mb-3">
-                            <label for="reportDescription" class="form-label fw-bold">Jelaskan Detail Bug / Masalah <span class="text-danger">*</span></label>
-                            <textarea class="form-control bg-dark text-light border-secondary" id="reportDescription" rows="3" placeholder="Contoh: Saat diklik tombol pencarian tidak merespons di perangkat HP..." required></textarea>
-                        </div>
+                            <!-- Jenis Kendala -->
+                            <div class="mb-3">
+                                <label for="reportType" class="form-label small text-muted fw-bold">JENIS KENDALA <span class="text-danger">*</span></label>
+                                <select class="form-select modern-select" id="reportType" required disabled>
+                                    <option value="" selected disabled>-- Pilih Kategori Di Atas Terlebih Dahulu --</option>
+                                </select>
+                            </div>
 
-                        <div id="reportAlert" class="alert d-none py-2 small" role="alert"></div>
+                            <!-- Deskripsi -->
+                            <div class="mb-3">
+                                <label for="reportDescription" class="form-label small text-muted fw-bold">DETAIL MASALAH <span class="text-danger">*</span></label>
+                                <textarea class="form-control modern-textarea" id="reportDescription" rows="3" placeholder="Jelaskan secara singkat kendala yang Anda temukan..." required></textarea>
+                            </div>
 
-                        <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-danger fw-bold" id="btnSubmitReport">
-                                <i class="fa-solid fa-paper-plane me-1"></i> Kirim Laporan
+                            <!-- Alert Box -->
+                            <div id="reportAlert" class="alert d-none py-2 small fw-bold mb-3" role="alert"></div>
+
+                            <!-- Submit -->
+                            <button type="submit" class="btn btn-danger w-100 py-2-5 rounded-pill fw-bold shadow-danger d-flex align-items-center justify-content-center gap-2" id="btnSubmitReport">
+                                <i class="fa-solid fa-paper-plane"></i> Kirim Laporan
                             </button>
-                        </div>
-                    </form>
+                        </form>
+                    </div>
+
                 </div>
             </div>
         </div>
@@ -240,10 +291,9 @@
                 <p class="mb-0 text-muted">© 2026 <strong>Endless For Beacon Corp</strong>. All Rights Reserved.</p>
             </div>
             <div class="footer-social d-flex gap-3">
-                <a href="#" class="social-icon" title="Instagram"><i class="fa-brands fa-instagram"></i></a>
-                <a href="#" class="social-icon" title="YouTube"><i class="fa-brands fa-youtube"></i></a>
-                <a href="#" class="social-icon" title="Facebook"><i class="fa-brands fa-facebook"></i></a>
-                <a href="#" class="social-icon" title="TikTok"><i class="fa-brands fa-tiktok"></i></a>
+                <a href="https://www.instagram.com/endless_for.beacon/" class="social-icon" title="Instagram"><i class="fa-brands fa-instagram"></i></a>
+                <a href="https://www.youtube.com/@EndlessForBeacon" class="social-icon" title="YouTube"><i class="fa-brands fa-youtube"></i></a>
+                <a href="https://www.tiktok.com/@endless.for_beacon06/" class="social-icon" title="TikTok"><i class="fa-brands fa-tiktok"></i></a>
             </div>
         </div>
     </footer>

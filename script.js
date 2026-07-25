@@ -403,15 +403,23 @@ function initChannels() {
 }
 
 // ==========================================
-// 6. PUSAT LAPORAN BUG & KENDALA
+// 6. PUSAT LAPORAN BUG & KENDALA (MODERN UI)
 // ==========================================
 function openReportModal() {
     const reportForm = document.getElementById('reportForm');
     const alertBox = document.getElementById('reportAlert');
+    const typeSelect = document.getElementById('reportType');
     
     reportForm.reset();
     alertBox.classList.add('d-none');
     document.getElementById('channelSelectContainer').classList.add('d-none');
+    
+    // Reset Kartu Kategori
+    document.querySelectorAll('.category-card').forEach(card => card.classList.remove('active'));
+    document.getElementById('reportCategory').value = '';
+    
+    typeSelect.disabled = true;
+    typeSelect.innerHTML = '<option value="" selected disabled>-- Pilih Kategori Di Atas Terlebih Dahulu --</option>';
     
     const reportModal = new bootstrap.Modal(document.getElementById('reportModal'));
     reportModal.show();
@@ -420,66 +428,76 @@ function openReportModal() {
 document.getElementById('btn-open-report').addEventListener('click', openReportModal);
 document.getElementById('btn-report-channel').addEventListener('click', openReportModal);
 
-document.getElementById('reportCategory').addEventListener('change', function() {
-    const category = this.value;
-    const typeSelect = document.getElementById('reportType');
-    const channelContainer = document.getElementById('channelSelectContainer');
-    const channelInput = document.getElementById('reportChannelName');
+// Logika Klik Kartu Kategori Interaktif
+document.querySelectorAll('.category-card').forEach(card => {
+    card.addEventListener('click', function() {
+        // Highlight Kartu
+        document.querySelectorAll('.category-card').forEach(c => c.classList.remove('active'));
+        this.classList.add('active');
+        
+        const category = this.getAttribute('data-category');
+        document.getElementById('reportCategory').value = category;
+        
+        const typeSelect = document.getElementById('reportType');
+        const channelContainer = document.getElementById('channelSelectContainer');
+        const channelInput = document.getElementById('reportChannelName');
 
-    typeSelect.innerHTML = '<option value="" selected disabled>-- Pilih Jenis Kendala --</option>';
+        typeSelect.disabled = false;
+        typeSelect.innerHTML = '<option value="" selected disabled>-- Pilih Jenis Kendala --</option>';
 
-    if (category === 'system_bug') {
-        channelContainer.classList.add('d-none');
-        const bugOptions = [
-            { val: "ui_broken", text: "Tampilan / Layout Website Rusak" },
-            { val: "button_not_working", text: "Fitur / Tombol Tidak Mau Diklik" },
-            { val: "search_error", text: "Pencarian Saluran Tidak Berfungsi" },
-            { val: "player_controls_bug", text: "Kontrol Player Error" }
-        ];
-        bugOptions.forEach(opt => typeSelect.innerHTML += `<option value="${opt.val}">${opt.text}</option>`);
+        if (category === 'system_bug') {
+            channelContainer.classList.add('d-none');
+            const bugOptions = [
+                { val: "ui_broken", text: "Tampilan / Layout Website Rusak" },
+                { val: "button_not_working", text: "Fitur / Tombol Tidak Mau Diklik" },
+                { val: "search_error", text: "Pencarian Saluran Tidak Berfungsi" },
+                { val: "player_controls_bug", text: "Kontrol Player Error" }
+            ];
+            bugOptions.forEach(opt => typeSelect.innerHTML += `<option value="${opt.val}">${opt.text}</option>`);
 
-    } else if (category === 'stream_issue') {
-        channelContainer.classList.remove('d-none');
-        channelInput.value = selectedChannel ? selectedChannel.name : 'Tidak Ada Saluran Dipilih';
+        } else if (category === 'stream_issue') {
+            channelContainer.classList.remove('d-none');
+            channelInput.value = selectedChannel ? selectedChannel.name : 'Tidak Ada Saluran Dipilih';
 
-        const streamOptions = [
-            { val: "stream_offline", text: "Siaran Terputus / Black Screen / Offline" },
-            { val: "audio_issue", text: "Audio Mati / Suara Tidak Sinkron" },
-            { val: "video_lag", text: "Video Lag / Buffering Terus-Menerus" },
-            { val: "wrong_stream", text: "Acara Tidak Sesuai Nama Saluran" }
-        ];
-        streamOptions.forEach(opt => typeSelect.innerHTML += `<option value="${opt.val}">${opt.text}</option>`);
+            const streamOptions = [
+                { val: "stream_offline", text: "Siaran Terputus / Black Screen / Offline" },
+                { val: "audio_issue", text: "Audio Mati / Suara Tidak Sinkron" },
+                { val: "video_lag", text: "Video Lag / Buffering Terus-Menerus" },
+                { val: "wrong_stream", text: "Acara Tidak Sesuai Nama Saluran" }
+            ];
+            streamOptions.forEach(opt => typeSelect.innerHTML += `<option value="${opt.val}">${opt.text}</option>`);
 
-    } else {
-        channelContainer.classList.add('d-none');
-        typeSelect.innerHTML += `<option value="general_feedback">Saran / Masukan Fitur</option>`;
-        typeSelect.innerHTML += `<option value="other">Lain-lain</option>`;
-    }
+        } else {
+            channelContainer.classList.add('d-none');
+            typeSelect.innerHTML += `<option value="general_feedback">Saran / Masukan Fitur</option>`;
+            typeSelect.innerHTML += `<option value="other">Lain-lain</option>`;
+        }
+    });
 });
 
+// Handling Form Submit dengan Animasi
 document.getElementById('reportForm').addEventListener('submit', function(e) {
     e.preventDefault();
 
     const btnSubmit = document.getElementById('btnSubmitReport');
     const alertBox = document.getElementById('reportAlert');
-    const category = document.getElementById('reportCategory').value;
 
     btnSubmit.disabled = true;
-    btnSubmit.innerHTML = `<i class="fa-solid fa-spinner fa-spin me-1"></i> Mengirim Laporan...`;
+    btnSubmit.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> Mengirim Laporan...`;
 
     setTimeout(() => {
         btnSubmit.disabled = false;
-        btnSubmit.innerHTML = `<i class="fa-solid fa-paper-plane me-1"></i> Kirim Laporan`;
+        btnSubmit.innerHTML = `<i class="fa-solid fa-paper-plane"></i> Kirim Laporan`;
 
         alertBox.className = "alert alert-success py-2 small fw-bold";
-        alertBox.textContent = "Laporan berhasil dikirim! Tim Beacon TV akan segera memeriksanya.";
+        alertBox.textContent = "Terima kasih! Laporan Anda berhasil dikirim ke tim teknis.";
         alertBox.classList.remove('d-none');
 
         setTimeout(() => {
             const modalEl = document.getElementById('reportModal');
             const modalInstance = bootstrap.Modal.getInstance(modalEl);
             if (modalInstance) modalInstance.hide();
-        }, 2000);
+        }, 1800);
 
     }, 1000);
 });
