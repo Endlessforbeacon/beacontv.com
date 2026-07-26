@@ -44,7 +44,7 @@ const channels = [
         poster: "Image/Beacon TV Thumbnail/Endless For Beacon TV.png",
         allowedCountries: ["ID"],
         isEndlessOwned: true,
-        isProgramRestricted: false // Parameter program sementara
+        isProgramRestricted: false
     },
     {
         name: "Beacon Hype",
@@ -122,6 +122,7 @@ const playOverlay = document.getElementById('play-overlay');
 const blackoutOverlay = document.getElementById('blackout-overlay');
 const restrictionImage = document.getElementById('restriction-image');
 const startStreamBtn = document.getElementById('start-stream-btn');
+const adminToggleBtn = document.getElementById('btn-admin-toggle');
 
 let hls = null;
 let plyrPlayer = null;
@@ -211,9 +212,15 @@ onAuthStateChanged(auth, (user) => {
         const name = user.displayName || user.email.split('@')[0];
         btnAuthAction.className = "btn btn-outline-light btn-sm rounded-pill px-3 fw-bold";
         btnAuthAction.innerHTML = `<i class="fa-solid fa-user-check text-success me-1"></i> ${name}`;
+        
+        // Tampilkan tombol saklar admin jika login
+        if (adminToggleBtn) adminToggleBtn.classList.remove('d-none');
     } else {
         btnAuthAction.className = "btn btn-danger btn-sm rounded-pill px-3 fw-bold";
         btnAuthAction.innerHTML = `<i class="fa-solid fa-right-to-bracket me-1"></i> Masuk`;
+        
+        // Sembunyikan tombol saklar admin jika tidak login
+        if (adminToggleBtn) adminToggleBtn.classList.add('d-none');
     }
 });
 
@@ -236,7 +243,6 @@ function getFirebaseErrorMessage(code) {
 // ==========================================
 // 2. PENGECEKAN KELAYAKAN SIARAN (PEMISAHAN LOGIKA)
 // ==========================================
-// Pengecekan 1: Izin Hak Siar & Masa Penayangan Keseluruhan Saluran
 function isChannelLicenseValid(channel) {
     if (channel.isEndlessOwned) return true;
     if (!channel.expiryDate) return true;
@@ -247,7 +253,6 @@ function isChannelLicenseValid(channel) {
     return now < expiry;
 }
 
-// Pengecekan 2: Apakah Saluran Sedang Menayangkan Program Terbatas (Program Hak Siar)
 function isProgramRestricted(channel) {
     return channel.isProgramRestricted === true;
 }
@@ -262,6 +267,13 @@ function isVisibleInList(channel) {
     const hideDate = new Date(expiry.getTime() + thirtyDaysInMs);
 
     return now < hideDate;
+}
+
+// Saklar Toggle Manual Khusus Admin
+function toggleProgramRestriction(channel) {
+    channel.isProgramRestricted = !channel.isProgramRestricted;
+    prepareStream(channel);
+    initChannels(); // Render ulang badge di daftar saluran
 }
 
 // ==========================================
@@ -294,8 +306,20 @@ function prepareStream(channel) {
     if (plyrPlayer) { plyrPlayer.stop(); }
     video.removeAttribute('src');
 
+    // Update UI Tombol Admin Toggle
+    if (adminToggleBtn) {
+        if (channel.isProgramRestricted) {
+            adminToggleBtn.className = "btn btn-sm btn-success fw-bold";
+            adminToggleBtn.innerHTML = `<i class="fa-solid fa-unlock me-1"></i> Buka Kunci Hak Siar`;
+        } else {
+            adminToggleBtn.className = "btn btn-sm btn-warning text-dark fw-bold";
+            adminToggleBtn.innerHTML = `<i class="fa-solid fa-lock me-1"></i> Kunci Hak Siar (Blackout)`;
+        }
+        adminToggleBtn.onclick = () => toggleProgramRestriction(channel);
+    }
+
     // -------------------------------------------------------------
-    // KONDISI 1: Saluran Tidak Bisa Diakses Karena Perubahan Izin Hak Siar & Masa Penayangan Habis
+    // KONDISI 1: Masa Penayangan Saluran Habis (Expired)
     // -------------------------------------------------------------
     if (!isChannelLicenseValid(channel)) {
         showRestrictionScreen(PATH_LICENSE_EXPIRED_IMAGE);
@@ -304,7 +328,7 @@ function prepareStream(channel) {
     }
 
     // -------------------------------------------------------------
-    // KONDISI 2: Saluran Tidak Bisa Diakses Sementara Karena Sedang Menayangkan Program Yang Bersifat Hak Siar ( / Geoblocking )
+    // KONDISI 2: Menayangkan Program Hak Siar / Geoblocking
     // -------------------------------------------------------------
     const isGlobal = channel.allowedCountries.includes("ALL");
     const isCountryAllowed = channel.allowedCountries.includes(userCountry);
@@ -316,7 +340,7 @@ function prepareStream(channel) {
     }
 
     // -------------------------------------------------------------
-    // KONDISI 3: Normal Stream (Lolos Semua Pengecekan)
+    // KONDISI 3: Tayangan Normal
     // -------------------------------------------------------------
     hideRestrictionScreen();
     playTitle.textContent = "Saluran Terpilih: " + channel.name;
@@ -382,7 +406,7 @@ function initChannels() {
         const isLicenseValid = isChannelLicenseValid(channel);
         const isRestricted = isProgramRestricted(channel);
         
-        item.className = `channel-item d-flex justify-content-between align-items-center ${(!isLicenseValid || isRestricted) ? 'expired-item' : ''}`;
+        item.className = `channel-item d-flex justify-content-between align-items-center ${(!isLicenseValid || isRestricted) ? 'expired-item' : ''} ${selectedChannel && selectedChannel.name === channel.name ? 'active' : ''}`;
         
         let badge = '';
         if (channel.isEndlessOwned) {
@@ -410,8 +434,7 @@ function initChannels() {
         channelsContainer.appendChild(item);
     });
 
-    if (visibleChannels.length > 0) {
-        channelsContainer.children[0].classList.add('active');
+    if (!selectedChannel && visibleChannels.length > 0) {
         prepareStream(visibleChannels[0]);
     }
 }
