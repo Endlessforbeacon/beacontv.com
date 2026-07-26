@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Beacon TV - Streaming Platform</title>
 
-    <!-- FAVICON LOGO BEACON TV (Untuk Tab Browser & Address Bar) -->
+    <!-- FAVICON LOGO BEACON TV -->
     <link rel="icon" type="image/x-icon" href="Image/Beacon TV Logo.png">
     <link rel="icon" type="image/png" sizes="32x32" href="Image/Beacon TV Logo.png">
     <link rel="icon" type="image/png" sizes="16x16" href="Image/Beacon TV Logo.png">
@@ -26,6 +26,14 @@
     <!-- HLS.js & Plyr JS -->
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <script src="https://cdn.plyr.io/3.7.8/plyr.polyfilled.js"></script>
+
+    <!-- EmailJS SDK -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script type="text/javascript">
+       (function(){
+          emailjs.init("DGh43sRVucKMAVNin");
+       })();
+    </script>
 </head>
 <body>
 
@@ -68,14 +76,9 @@
                         </button>
                     </div>
 
-                    <!-- Overlay Layar Pemberitahuan Non-Aktif / Expiry Notice -->
-                    <div id="blackout-overlay" class="position-absolute top-0 start-0 w-100 h-100 d-none flex-column justify-content-center align-items-center text-center p-4">
-                        <i class="fa-solid fa-shield-halved text-danger display-1 mb-3 blackout-icon"></i>
-                        <h3 id="restriction-title" class="fw-bold text-uppercase text-white">Akses Siaran Dibatasi</h3>
-                        <p id="restriction-reason" class="text-light max-w-500">
-                            Stasiun TV ini tidak lagi dapat diakses di Beacon TV dikarenakan perubahan izin hak siar atau penyesuaian layanan penayangan.
-                        </p>
-                        <span id="restriction-code" class="badge bg-danger px-3 py-2 mt-2 fs-6">BEACON-EXPIRED</span>
+                    <!-- OVERLAY BACKGROUND GAMBAR PERINGATAN (DIPISAH SESUAI KATAGORI) -->
+                    <div id="blackout-overlay" class="position-absolute top-0 start-0 w-100 h-100 d-none justify-content-center align-items-center">
+                        <img id="restriction-image" src="" alt="Peringatan Pembatasan Siaran" class="w-100 h-100 object-fit-contain">
                     </div>
 
                 </div>
@@ -102,12 +105,11 @@
         </div>
     </div>
 
-    <!-- MODAL AUTH (LOGIN & REGISTER FIREBASE) -->
+    <!-- MODAL AUTH -->
     <div class="modal fade" id="authModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content bg-dark text-light auth-card overflow-hidden">
                 <div class="row g-0">
-                    <!-- Sisi Kiri / Hero Branding -->
                     <div class="col-md-5 auth-sidebar d-none d-md-flex flex-column justify-content-between p-4 position-relative">
                         <div class="auth-sidebar-overlay"></div>
                         <div class="position-relative z-1">
@@ -119,7 +121,6 @@
                         </div>
                     </div>
 
-                    <!-- Sisi Kanan / Form Auth -->
                     <div class="col-md-7 p-4 p-lg-5 bg-dark-glass">
                         <div class="d-flex justify-content-between align-items-center mb-4">
                             <div class="auth-tabs-wrapper">
@@ -185,13 +186,11 @@
         </div>
     </div>
 
-    <!-- MODAL REPORT (PUSAT LAPORAN BUG & KENDALA - MODERN UI) -->
+    <!-- MODAL REPORT -->
     <div class="modal fade" id="reportModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content bg-dark text-light auth-card overflow-hidden">
                 <div class="row g-0">
-                    
-                    <!-- Sisi Kiri: Hero Banner -->
                     <div class="col-md-4 auth-sidebar d-none d-md-flex flex-column justify-content-between p-4 position-relative">
                         <div class="auth-sidebar-overlay"></div>
                         <div class="position-relative z-1">
@@ -200,7 +199,7 @@
                             </span>
                             <h4 class="fw-bold text-white mt-2">Pusat Kendala & Bug</h4>
                             <p class="text-light-50 small mb-0 mt-2">
-                                Temukan bug atau siaran bermasalah? Laporkan agar tim teknis **Beacon TV** bisa segera membereskannya!
+                                Temukan bug atau siaran bermasalah? Laporkan agar tim teknis Beacon TV Support bisa segera membereskannya!
                             </p>
                         </div>
                         <div class="position-relative z-1">
@@ -208,12 +207,11 @@
                                 <div class="d-flex align-items-center gap-2 text-warning small fw-bold mb-1">
                                     <i class="fa-solid fa-bolt"></i> Respon Cepat
                                 </div>
-                                <div class="text-light-50 fs-7">Laporan Anda langsung diteruskan ke log sistem pengawasan siaran.</div>
+                                <div class="text-light-50 fs-7">Laporan Anda akan terkirim langsung ke inbox Email Support Beacon TV.</div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Sisi Kanan: Form Laporan -->
                     <div class="col-md-8 p-4 p-lg-4 bg-dark-glass position-relative">
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <h5 class="fw-bold text-white mb-0 d-flex align-items-center gap-2">
@@ -223,7 +221,6 @@
                         </div>
 
                         <form id="reportForm">
-                            <!-- Kategori Cards -->
                             <label class="form-label small text-muted fw-bold mb-2">PILIH KATEGORI MASALAH <span class="text-danger">*</span></label>
                             <div class="row g-2 mb-3">
                                 <div class="col-4">
@@ -247,7 +244,6 @@
                             </div>
                             <input type="hidden" id="reportCategory" required>
 
-                            <!-- Channel Dinamis -->
                             <div class="mb-3 d-none" id="channelSelectContainer">
                                 <label class="form-label small text-muted fw-bold">SALURAN TERDAMPAK</label>
                                 <div class="modern-input-group">
@@ -255,7 +251,6 @@
                                 </div>
                             </div>
 
-                            <!-- Jenis Kendala -->
                             <div class="mb-3">
                                 <label for="reportType" class="form-label small text-muted fw-bold">JENIS KENDALA <span class="text-danger">*</span></label>
                                 <select class="form-select modern-select" id="reportType" required disabled>
@@ -263,16 +258,13 @@
                                 </select>
                             </div>
 
-                            <!-- Deskripsi -->
                             <div class="mb-3">
                                 <label for="reportDescription" class="form-label small text-muted fw-bold">DETAIL MASALAH <span class="text-danger">*</span></label>
                                 <textarea class="form-control modern-textarea" id="reportDescription" rows="3" placeholder="Jelaskan secara singkat kendala yang Anda temukan..." required></textarea>
                             </div>
 
-                            <!-- Alert Box -->
                             <div id="reportAlert" class="alert d-none py-2 small fw-bold mb-3" role="alert"></div>
 
-                            <!-- Submit -->
                             <button type="submit" class="btn btn-danger w-100 py-2-5 rounded-pill fw-bold shadow-danger d-flex align-items-center justify-content-center gap-2" id="btnSubmitReport">
                                 <i class="fa-solid fa-paper-plane"></i> Kirim Laporan
                             </button>
@@ -301,7 +293,7 @@
     <!-- Bootstrap JS Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
-    <!-- Script Utama JavaScript (ES Module untuk Firebase) -->
+    <!-- Script Utama JavaScript -->
     <script type="module" src="script.js"></script>
 </body>
 </html>
