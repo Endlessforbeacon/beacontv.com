@@ -63,6 +63,38 @@ const channels = [
         isProgramRestricted: false
     },
     {
+        name: "Beacon Sports Channel 2",
+        url: "https://live.antaranews.com/hls/live.m3u8",
+        poster: "logo-antara.jpg",
+        allowedCountries: ["ID"],
+        isEndlessOwned: true,
+        isProgramRestricted: false
+    },
+    {
+        name: "Endless For Beacon Music Channel",
+        url: "https://live.antaranews.com/hls/live.m3u8",
+        poster: "logo-antara.jpg",
+        allowedCountries: ["ID"],
+        isEndlessOwned: true,
+        isProgramRestricted: false
+    },
+    {
+        name: "Beacon Kids TV",
+        url: "https://live.antaranews.com/hls/live.m3u8",
+        poster: "logo-antara.jpg",
+        allowedCountries: ["ID"],
+        isEndlessOwned: true,
+        isProgramRestricted: false
+    },
+    {
+        name: "Endless For Beacon Movies & Drama",
+        url: "https://live.antaranews.com/hls/live.m3u8",
+        poster: "logo-antara.jpg",
+        allowedCountries: ["ID"],
+        isEndlessOwned: true,
+        isProgramRestricted: false
+    },
+    {
         name: "TVRI",
         url: "https://live.antaranews.com/hls/live.m3u8",
         poster: "Image/Beacon TV Thumbnail/TVRI.png",
@@ -77,8 +109,8 @@ const channels = [
         poster: "Image/Beacon TV Thumbnail/MDTV.png",
         allowedCountries: ["ID"],
         isEndlessOwned: false,
-        expiryDate: "2027-12-31T00:00:00",
-        isProgramRestricted: true // CONTOH: Sedang Menayangkan Program Ber-Hak Siar
+        expiryDate: "2025-12-01T00:00:00",
+        isProgramRestricted: false
     }
 ];
 
