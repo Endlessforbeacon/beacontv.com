@@ -42,75 +42,57 @@ const channels = [
         name: "Endless For Beacon TV",
         url: "http://127.0.0.1:8000/stream/channels/1.m3u8",
         poster: "Image/Beacon TV Thumbnail/Endless For Beacon TV.png",
-        allowedCountries: ["ID"],
-        isEndlessOwned: true,
-        isProgramRestricted: false
+        isEndlessOwned: true
     },
     {
         name: "Beacon Hype",
         url: "https://k-s.tvri.go.id/live/tvri.m3u8",
         poster: "logo-tvri.jpg",
-        allowedCountries: ["ID"],
-        isEndlessOwned: true,
-        isProgramRestricted: false
+        isEndlessOwned: true
     },
     {
         name: "Endless For Beacon Sports Channel",
         url: "https://live.antaranews.com/hls/live.m3u8",
         poster: "logo-antara.jpg",
-        allowedCountries: ["ID"],
-        isEndlessOwned: true,
-        isProgramRestricted: false
+        isEndlessOwned: true
     },
     {
         name: "Beacon Sports Channel 2",
         url: "https://live.antaranews.com/hls/live.m3u8",
         poster: "logo-antara.jpg",
-        allowedCountries: ["ID"],
-        isEndlessOwned: true,
-        isProgramRestricted: false
+        isEndlessOwned: true
     },
     {
         name: "Endless For Beacon Music Channel",
         url: "https://live.antaranews.com/hls/live.m3u8",
         poster: "logo-antara.jpg",
-        allowedCountries: ["ID"],
-        isEndlessOwned: true,
-        isProgramRestricted: false
+        isEndlessOwned: true
     },
     {
         name: "Beacon Kids TV",
         url: "https://live.antaranews.com/hls/live.m3u8",
         poster: "logo-antara.jpg",
-        allowedCountries: ["ID"],
-        isEndlessOwned: true,
-        isProgramRestricted: false
+        isEndlessOwned: true
     },
     {
         name: "Endless For Beacon Movies & Drama",
         url: "https://live.antaranews.com/hls/live.m3u8",
         poster: "logo-antara.jpg",
-        allowedCountries: ["ID"],
-        isEndlessOwned: true,
-        isProgramRestricted: false
+        isEndlessOwned: true
     },
     {
         name: "TVRI",
         url: "https://live.antaranews.com/hls/live.m3u8",
         poster: "Image/Beacon TV Thumbnail/TVRI.png",
-        allowedCountries: ["ID"],
         isEndlessOwned: false,
-        expiryDate: "2026-07-21T00:00:00",
-        isProgramRestricted: false
+        expiryDate: "2026-07-21T00:00:00"
     },
     {
         name: "MDTV",
         url: "https://live.antaranews.com/hls/live.m3u8",
         poster: "Image/Beacon TV Thumbnail/MDTV.png",
-        allowedCountries: ["ID"],
         isEndlessOwned: false,
-        expiryDate: "2025-12-01T00:00:00",
-        isProgramRestricted: false
+        expiryDate: "2025-12-01T00:00:00"
     }
 ];
 
@@ -122,12 +104,10 @@ const playOverlay = document.getElementById('play-overlay');
 const blackoutOverlay = document.getElementById('blackout-overlay');
 const restrictionImage = document.getElementById('restriction-image');
 const startStreamBtn = document.getElementById('start-stream-btn');
-const adminToggleBtn = document.getElementById('btn-admin-toggle');
 
 let hls = null;
 let plyrPlayer = null;
 let selectedChannel = null;
-let userCountry = "UNKNOWN";
 
 // ==========================================
 // 1. FIREBASE AUTH LOGIC
@@ -212,15 +192,9 @@ onAuthStateChanged(auth, (user) => {
         const name = user.displayName || user.email.split('@')[0];
         btnAuthAction.className = "btn btn-outline-light btn-sm rounded-pill px-3 fw-bold";
         btnAuthAction.innerHTML = `<i class="fa-solid fa-user-check text-success me-1"></i> ${name}`;
-        
-        // Tampilkan tombol saklar admin jika login
-        if (adminToggleBtn) adminToggleBtn.classList.remove('d-none');
     } else {
         btnAuthAction.className = "btn btn-danger btn-sm rounded-pill px-3 fw-bold";
         btnAuthAction.innerHTML = `<i class="fa-solid fa-right-to-bracket me-1"></i> Masuk`;
-        
-        // Sembunyikan tombol saklar admin jika tidak login
-        if (adminToggleBtn) adminToggleBtn.classList.add('d-none');
     }
 });
 
@@ -241,7 +215,7 @@ function getFirebaseErrorMessage(code) {
 }
 
 // ==========================================
-// 2. PENGECEKAN KELAYAKAN SIARAN (PEMISAHAN LOGIKA)
+// 2. PENGECEKAN LISENSI SALURAN EXPIRED
 // ==========================================
 function isChannelLicenseValid(channel) {
     if (channel.isEndlessOwned) return true;
@@ -251,10 +225,6 @@ function isChannelLicenseValid(channel) {
     const expiry = new Date(channel.expiryDate);
 
     return now < expiry;
-}
-
-function isProgramRestricted(channel) {
-    return channel.isProgramRestricted === true;
 }
 
 function isVisibleInList(channel) {
@@ -269,28 +239,8 @@ function isVisibleInList(channel) {
     return now < hideDate;
 }
 
-// Saklar Toggle Manual Khusus Admin
-function toggleProgramRestriction(channel) {
-    channel.isProgramRestricted = !channel.isProgramRestricted;
-    prepareStream(channel);
-    initChannels(); // Render ulang badge di daftar saluran
-}
-
 // ==========================================
-// 3. DETEKSI LOKASI IP (GEOBLOCKING)
-// ==========================================
-async function detectUserCountry() {
-    try {
-        const response = await fetch('https://ipapi.co/json/');
-        const data = await response.json();
-        userCountry = data.country_code;
-    } catch (error) {
-        userCountry = "ID";
-    }
-}
-
-// ==========================================
-// 4. PLAYER & LOGIKA TAMPILAN KEDUA GAMBAR PERINGATAN
+// 3. INITIALIZE PLYR & UI OVERLAY LOGIC
 // ==========================================
 function initPlyr() {
     plyrPlayer = new Plyr(video, {
@@ -306,18 +256,6 @@ function prepareStream(channel) {
     if (plyrPlayer) { plyrPlayer.stop(); }
     video.removeAttribute('src');
 
-    // Update UI Tombol Admin Toggle
-    if (adminToggleBtn) {
-        if (channel.isProgramRestricted) {
-            adminToggleBtn.className = "btn btn-sm btn-success fw-bold";
-            adminToggleBtn.innerHTML = `<i class="fa-solid fa-unlock me-1"></i> Buka Kunci Hak Siar`;
-        } else {
-            adminToggleBtn.className = "btn btn-sm btn-warning text-dark fw-bold";
-            adminToggleBtn.innerHTML = `<i class="fa-solid fa-lock me-1"></i> Kunci Hak Siar (Blackout)`;
-        }
-        adminToggleBtn.onclick = () => toggleProgramRestriction(channel);
-    }
-
     // -------------------------------------------------------------
     // KONDISI 1: Masa Penayangan Saluran Habis (Expired)
     // -------------------------------------------------------------
@@ -328,19 +266,7 @@ function prepareStream(channel) {
     }
 
     // -------------------------------------------------------------
-    // KONDISI 2: Menayangkan Program Hak Siar / Geoblocking
-    // -------------------------------------------------------------
-    const isGlobal = channel.allowedCountries.includes("ALL");
-    const isCountryAllowed = channel.allowedCountries.includes(userCountry);
-
-    if (isProgramRestricted(channel) || (!isGlobal && !isCountryAllowed)) {
-        showRestrictionScreen(PATH_PROGRAM_RESTRICTED_IMAGE);
-        playTitle.textContent = "Dibatasi Sementara (Program Hak Siar): " + channel.name;
-        return;
-    }
-
-    // -------------------------------------------------------------
-    // KONDISI 3: Tayangan Normal
+    // KONDISI 2: Siaran Normal Siap Diputar
     // -------------------------------------------------------------
     hideRestrictionScreen();
     playTitle.textContent = "Saluran Terpilih: " + channel.name;
@@ -368,24 +294,83 @@ function hideRestrictionScreen() {
     blackoutOverlay.classList.add('d-none');
 }
 
+// ==========================================
+// 4. STREAMING ENGINE DENGAN AUTO-FALLBACK HTTP ERROR (AUTOMATIC BLACKOUT)
+// ==========================================
 function startStream() {
-    if (!selectedChannel || !isChannelLicenseValid(selectedChannel) || isProgramRestricted(selectedChannel)) return;
+    if (!selectedChannel || !isChannelLicenseValid(selectedChannel)) return;
 
     playTitle.textContent = "Sedang Memutar: " + selectedChannel.name;
     playOverlay.style.setProperty('display', 'none', 'important');
 
+    if (hls) {
+        hls.destroy();
+        hls = null;
+    }
+
     if (Hls.isSupported()) {
-        hls = new Hls();
+        hls = new Hls({
+            manifestLoadingMaxRetry: 2,
+            levelLoadingMaxRetry: 2,
+            fragLoadingMaxRetry: 2
+        });
+
         hls.loadSource(selectedChannel.url);
         hls.attachMedia(video);
+
         hls.on(Hls.Events.MANIFEST_PARSED, function() {
+            hideRestrictionScreen();
             plyrPlayer.play();
         });
+
+        // -----------------------------------------------------------------
+        // AUTO-FALLBACK: SENSING PEMBLOKIRAN HAK SIAR DARI SERVER TV ASAL
+        // -----------------------------------------------------------------
+        hls.on(Hls.Events.ERROR, function (event, data) {
+            if (data.fatal) {
+                switch (data.type) {
+                    case Hls.ErrorTypes.NETWORK_ERROR:
+                        const responseCode = data.response ? data.response.code : 0;
+                        
+                        // Respon HTTP 401 (Unauthorized), 403 (Forbidden), atau 404 (Not Found)
+                        // Mengindikasikan Server Stasiun TV sedang memblokir akses akibat Hak Siar/Geoblock
+                        if ([401, 403, 404].includes(responseCode)) {
+                            console.warn(`[Beacon TV Auto-Fallback] Hak Siar / Geoblock Terdeteksi Aktif di ${selectedChannel.name} (Respon HTTP ${responseCode})`);
+                            
+                            hls.destroy();
+                            hls = null;
+
+                            // Tampilkan Layar Blackout Peringatan Hak Siar secara Otomatis
+                            showRestrictionScreen(PATH_PROGRAM_RESTRICTED_IMAGE);
+                            playTitle.textContent = "Dibatasi Sementara (Program Hak Siar): " + selectedChannel.name;
+                        } else {
+                            // Error Jaringan Biasa
+                            hls.startLoad();
+                        }
+                        break;
+
+                    case Hls.ErrorTypes.MEDIA_ERROR:
+                        hls.recoverMediaError();
+                        break;
+
+                    default:
+                        hls.destroy();
+                        break;
+                }
+            }
+        });
+
     } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+        // Fallback Native Safari Browser
         video.src = selectedChannel.url;
         video.addEventListener('loadedmetadata', function() {
             plyrPlayer.play();
         });
+
+        video.onerror = function() {
+            showRestrictionScreen(PATH_PROGRAM_RESTRICTED_IMAGE);
+            playTitle.textContent = "Dibatasi Sementara (Program Hak Siar): " + selectedChannel.name;
+        };
     }
 }
 
@@ -404,17 +389,14 @@ function initChannels() {
     visibleChannels.forEach((channel) => {
         const item = document.createElement('div');
         const isLicenseValid = isChannelLicenseValid(channel);
-        const isRestricted = isProgramRestricted(channel);
         
-        item.className = `channel-item d-flex justify-content-between align-items-center ${(!isLicenseValid || isRestricted) ? 'expired-item' : ''} ${selectedChannel && selectedChannel.name === channel.name ? 'active' : ''}`;
+        item.className = `channel-item d-flex justify-content-between align-items-center ${!isLicenseValid ? 'expired-item' : ''} ${selectedChannel && selectedChannel.name === channel.name ? 'active' : ''}`;
         
         let badge = '';
         if (channel.isEndlessOwned) {
             badge = `<span class="badge bg-danger ms-2" style="font-size: 0.65rem;">OFFICIAL</span>`;
         } else if (!isLicenseValid) {
             badge = `<span class="badge bg-secondary ms-2" style="font-size: 0.65rem;">NON-AKTIF</span>`;
-        } else if (isRestricted) {
-            badge = `<span class="badge bg-warning text-dark ms-2" style="font-size: 0.65rem;">HAK SIAR</span>`;
         }
 
         item.innerHTML = `
@@ -563,17 +545,8 @@ document.getElementById('reportForm').addEventListener('submit', function(e) {
 // ==========================================
 // 7. INITIALIZATION ON LOAD
 // ==========================================
-window.addEventListener('DOMContentLoaded', async () => {
+window.addEventListener('DOMContentLoaded', () => {
     initPlyr();
-    await detectUserCountry();
     initChannels();
     startStreamBtn.addEventListener('click', startStream);
 });
-
-setInterval(() => {
-    if (selectedChannel && !selectedChannel.isEndlessOwned) {
-        if (!isChannelLicenseValid(selectedChannel) || isProgramRestricted(selectedChannel)) {
-            prepareStream(selectedChannel);
-        }
-    }
-}, 5000);

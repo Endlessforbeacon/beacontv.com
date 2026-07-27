@@ -59,7 +59,7 @@ body {
     box-shadow: 0 0 25px rgba(255, 71, 87, 0.7) !important;
 }
 
-/* OVERLAY GAMBAR PERINGATAN HAK SIAR & GEOBLOCKING */
+/* OVERLAY GAMBAR PERINGATAN AUTOMATIC BLACKOUT */
 #blackout-overlay {
     background-color: #0d0d0e;
     z-index: 30;
@@ -202,12 +202,12 @@ body {
 .auth-sidebar-overlay {
     position: absolute;
     top: 0; left: 0; right: 0; bottom: 0;
-    background: radial-gradient(circle at top left, rgba(255, 71, 87, 0.25), transparent 70%);
+    background: radial-gradient(circle at top left, rgba(250, 81, 95, 0.25), transparent 70%);
     pointer-events: none;
 }
 
 .bg-dark-glass {
-    background-color: rgba(26, 26, 26, 0.95);
+    background-color: #ff5454dc;
 }
 
 .auth-tabs-wrapper {
@@ -289,7 +289,7 @@ body {
    FOOTER & SCROLLBAR
    ========================================== */
 .footer-custom {
-    background-color: rgba(18, 18, 18, 0.95);
+    background-color: #ff5858a9;
     backdrop-filter: blur(5px);
 }
 
