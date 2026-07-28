@@ -185,7 +185,7 @@ body {
 .channel-list {
     max-height: 420px;
     overflow-y: auto;
-    background-color: hsla(98, 93%, 61%, 0.747);
+    background-color: rgba(26, 26, 26, 0.85);
     border-radius: 12px;
     padding: 12px;
     backdrop-filter: blur(5px);
@@ -196,14 +196,14 @@ body {
     cursor: pointer;
     padding: 12px 15px;
     margin-bottom: 8px;
-    background-color: hsla(98, 93%, 61%, 0.747);
+    background-color: rgba(42, 42, 42, 0.9);
     border-radius: 8px;
     transition: all 0.2s ease;
     border-left: 4px solid transparent;
 }
 
 .channel-item:hover {
-    background-color: hsla(98, 93%, 61%, 0.747);
+    background-color: rgba(58, 58, 58, 0.9);
     border-left-color: #ff4757;
 }
 
