@@ -185,7 +185,7 @@ body {
 .channel-list {
     max-height: 420px;
     overflow-y: auto;
-    background-color: rgba(26, 26, 26, 0.85);
+    background-color: hsla(98, 93%, 61%, 0.747);
     border-radius: 12px;
     padding: 12px;
     backdrop-filter: blur(5px);
