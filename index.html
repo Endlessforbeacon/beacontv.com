@@ -39,21 +39,31 @@
 
     <!-- Header / Navigasi Navbar -->
     <nav class="navbar navbar-dark bg-dark mb-4 border-bottom border-danger">
-        <div class="container d-flex justify-content-between align-items-center">
+        <div class="container d-flex justify-content-between align-items-center flex-wrap gap-2">
             <a class="navbar-brand d-flex align-items-center" href="#">
                 <img src="Image/Beacon TV Logo.png" alt="Beacon TV Logo" height="40" class="me-2" onerror="this.style.display='none'">
-                <span class="fs-4 fw-bold text-uppercase text-white">Beacon <span class="text-danger">TV</span></span>
+                <span class="fs-4 fw-bold text-uppercase text-white brand-text">Beacon <span class="text-danger">TV</span></span>
             </a>
             
-            <div class="d-flex align-items-center gap-2">
+            <!-- FITUR JAM 3 ZONA WAKTU INDONESIA (WIB, WITA, WIT) -->
+            <div class="timezone-clock-wrapper d-flex align-items-center gap-2 px-3 py-1 rounded-pill bg-dark-glass border border-secondary border-opacity-25">
+                <i class="fa-regular fa-clock text-danger"></i>
+                <div class="d-flex gap-3 small fw-bold">
+                    <span class="clock-item"><span class="text-muted">WIB:</span> <span id="clock-wib" class="text-white">00:00</span></span>
+                    <span class="clock-item border-start border-secondary ps-3"><span class="text-danger">WITA:</span> <span id="clock-wita" class="text-white">00:00</span></span>
+                    <span class="clock-item border-start border-secondary ps-3"><span class="text-muted">WIT:</span> <span id="clock-wit" class="text-white">00:00</span></span>
+                </div>
+            </div>
+
+            <div class="d-flex align-items-center gap-2 nav-buttons-wrapper">
                 <!-- Tombol Laporkan Bug / Kendala -->
                 <button class="btn btn-outline-danger btn-sm rounded-pill px-3 fw-bold" id="btn-open-report">
-                    <i class="fa-solid fa-bug me-1"></i> Laporkan Kendala
+                    <i class="fa-solid fa-bug me-1"></i> <span>Laporkan Kendala</span>
                 </button>
                 
                 <!-- Tombol Login / User Profile -->
-                <button class="btn btn-danger btn-sm rounded-pill px-3 fw-bold" id="btn-auth-action">
-                    <i class="fa-solid fa-right-to-bracket me-1"></i> Masuk
+                <button class="btn btn-danger btn-sm rounded-pill px-3 fw-bold d-flex align-items-center gap-2" id="btn-auth-action">
+                    <i class="fa-solid fa-right-to-bracket"></i> <span>Masuk</span>
                 </button>
             </div>
         </div>
@@ -99,7 +109,23 @@
 
             <!-- Kolom Daftar Channel (Kanan) -->
             <div class="col-lg-4">
-                <h4 class="mb-3 text-danger fw-bold text-uppercase">Daftar Saluran</h4>
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h4 class="mb-0 text-danger fw-bold text-uppercase">Daftar Saluran</h4>
+                </div>
+
+                <!-- SEARCH BAR & FILTER KATEGORI -->
+                <div class="mb-3">
+                    <div class="modern-input-group mb-2">
+                        <i class="fa-solid fa-magnifying-glass input-icon"></i>
+                        <input type="text" id="search-channel-input" class="form-control modern-input" placeholder="Cari nama saluran TV...">
+                    </div>
+                    <div class="category-filter-wrapper d-flex gap-1 overflow-x-auto pb-1">
+                        <button class="btn btn-sm btn-outline-danger active rounded-pill px-3 filter-btn" data-category="all">Semua</button>
+                        <button class="btn btn-sm btn-outline-secondary text-light rounded-pill px-3 filter-btn" data-category="official">Official</button>
+                        <button class="btn btn-sm btn-outline-secondary text-light rounded-pill px-3 filter-btn" data-category="national">Nasional</button>
+                    </div>
+                </div>
+
                 <div class="channel-list" id="channels-container">
                     <!-- Item TV dirender otomatis oleh JS -->
                 </div>
@@ -183,6 +209,69 @@
                             </button>
                         </form>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL PROFIL PENGGUNA KUSTOM -->
+    <div class="modal fade" id="userProfileModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-dark text-light auth-card overflow-hidden">
+                <div class="modal-header border-bottom border-secondary border-opacity-25 pb-3">
+                    <h5 class="modal-title fw-bold d-flex align-items-center gap-2">
+                        <i class="fa-solid fa-id-card text-danger"></i> Profil Pengguna
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4 text-center">
+                    <!-- Avatar Preview -->
+                    <div class="position-relative d-inline-block mb-3">
+                        <img id="profileAvatarPreview" src="https://api.dicebear.com/7.x/bottts/svg?seed=BeaconUser" alt="Avatar" class="rounded-circle border border-2 border-danger shadow-lg" width="100" height="100" style="object-fit: cover;">
+                    </div>
+
+                    <form id="updateProfileForm">
+                        <div class="mb-3 text-start">
+                            <label class="form-label small text-muted fw-bold">NAMA TAMPILAN</label>
+                            <div class="modern-input-group">
+                                <i class="fa-solid fa-user input-icon"></i>
+                                <input type="text" class="form-control modern-input" id="profileDisplayName" placeholder="Nama Anda" required>
+                            </div>
+                        </div>
+
+                        <div class="mb-3 text-start">
+                            <label class="form-label small text-muted fw-bold">ALAMAT EMAIL</label>
+                            <div class="modern-input-group">
+                                <i class="fa-solid fa-envelope input-icon"></i>
+                                <input type="email" class="form-control modern-input text-muted" id="profileEmail" disabled readonly>
+                            </div>
+                        </div>
+
+                        <div class="mb-4 text-start">
+                            <label class="form-label small text-muted fw-bold">PILIH GAYA AVATAR</label>
+                            <select class="form-select modern-select" id="profileAvatarSeed">
+                                <option value="BeaconUser">Avatar Classic</option>
+                                <option value="Cyber">Avatar Cyber</option>
+                                <option value="Gamer">Avatar Gamer</option>
+                                <option value="Radio">Avatar Broadcaster</option>
+                                <option value="Hero">Avatar Edge</option>
+                            </select>
+                        </div>
+
+                        <div id="profileAlert" class="alert d-none py-2 small fw-bold mb-3" role="alert"></div>
+
+                        <!-- Tombol Simpan Perubahan -->
+                        <button type="submit" class="btn btn-danger w-100 py-2-5 rounded-pill fw-bold shadow-danger mb-3 d-flex align-items-center justify-content-center gap-2">
+                            <i class="fa-solid fa-floppy-disk"></i> Simpan Profil
+                        </button>
+                    </form>
+
+                    <hr class="border-secondary border-opacity-25 my-3">
+
+                    <!-- TOMBOL KHUSUS LOGOUT DENGAN IKON KELUAR -->
+                    <button type="button" class="btn btn-outline-danger w-100 py-2-5 rounded-pill fw-bold d-flex align-items-center justify-content-center gap-2" id="btn-modal-logout">
+                        <i class="fa-solid fa-right-from-bracket fs-5"></i> Keluar Dari Beacon TV
+                    </button>
                 </div>
             </div>
         </div>

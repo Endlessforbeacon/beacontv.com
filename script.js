@@ -21,70 +21,42 @@ const firebaseConfig = {
     appId: "1:372003061472:web:d57dbec882701a41221a85"
 };
 
-// Inisialisasi Firebase Auth
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
-// ==========================================
-// PATH GAMBAR WARNING PERINGATAN (DIPISAH)
-// ==========================================
-// 1. Gambar Peringatan Izin Hak Siar Terpisah / Expired (Permanent Notice)
+// PATH GAMBAR WARNING PERINGATAN
 const PATH_LICENSE_EXPIRED_IMAGE = "Image/Beacon TV Licensed Expired Warning.png";
-
-// 2. Gambar Peringatan Saluran Sedang Menayangkan Program Hak Siar / Geoblock (Temporary Program Notice)
 const PATH_PROGRAM_RESTRICTED_IMAGE = "Image/Beacon TV Broadcast Rights Restrict Atau Geoblock Warning.png";
 
-// ==========================================
 // DATA CHANNEL BEACON TV
-// ==========================================
 const channels = [
     {
         name: "Endless For Beacon TV",
         url: "http://127.0.0.1:8000/stream/channels/1.m3u8",
         poster: "Image/Beacon TV Thumbnail/Endless For Beacon TV.png",
-        isEndlessOwned: true
+        isEndlessOwned: true,
+        category: "official"
     },
     {
         name: "Beacon Hype",
         url: "https://k-s.tvri.go.id/live/tvri.m3u8",
         poster: "logo-tvri.jpg",
-        isEndlessOwned: true
+        isEndlessOwned: true,
+        category: "official"
     },
     {
         name: "Endless For Beacon Sports Channel",
         url: "https://live.antaranews.com/hls/live.m3u8",
         poster: "logo-antara.jpg",
-        isEndlessOwned: true
-    },
-    {
-        name: "Beacon Sports Channel 2",
-        url: "https://live.antaranews.com/hls/live.m3u8",
-        poster: "logo-antara.jpg",
-        isEndlessOwned: true
-    },
-    {
-        name: "Endless For Beacon Music Channel",
-        url: "https://live.antaranews.com/hls/live.m3u8",
-        poster: "logo-antara.jpg",
-        isEndlessOwned: true
-    },
-    {
-        name: "Beacon Kids TV",
-        url: "https://live.antaranews.com/hls/live.m3u8",
-        poster: "logo-antara.jpg",
-        isEndlessOwned: true
-    },
-    {
-        name: "Endless For Beacon Movies & Drama",
-        url: "https://live.antaranews.com/hls/live.m3u8",
-        poster: "logo-antara.jpg",
-        isEndlessOwned: true
+        isEndlessOwned: true,
+        category: "official"
     },
     {
         name: "TVRI",
         url: "https://live.antaranews.com/hls/live.m3u8",
         poster: "Image/Beacon TV Thumbnail/TVRI.png",
         isEndlessOwned: false,
+        category: "national",
         expiryDate: "2026-07-21T00:00:00"
     },
     {
@@ -92,6 +64,7 @@ const channels = [
         url: "https://live.antaranews.com/hls/live.m3u8",
         poster: "Image/Beacon TV Thumbnail/MDTV.png",
         isEndlessOwned: false,
+        category: "national",
         expiryDate: "2025-12-01T00:00:00"
     }
 ];
@@ -108,9 +81,30 @@ const startStreamBtn = document.getElementById('start-stream-btn');
 let hls = null;
 let plyrPlayer = null;
 let selectedChannel = null;
+let currentCategoryFilter = 'all';
+let searchQuery = '';
 
 // ==========================================
-// 1. FIREBASE AUTH LOGIC
+// 1. FITUR JAM 3 ZONA WAKTU INDONESIA
+// ==========================================
+function updateIndonesiaClocks() {
+    const now = new Date();
+
+    const optionsWib = { timeZone: 'Asia/Jakarta', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
+    const optionsWita = { timeZone: 'Asia/Makassar', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
+    const optionsWit = { timeZone: 'Asia/Jayapura', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
+
+    document.getElementById('clock-wib').textContent = new Intl.DateTimeFormat('id-ID', optionsWib).format(now);
+    document.getElementById('clock-wita').textContent = new Intl.DateTimeFormat('id-ID', optionsWita).format(now);
+    document.getElementById('clock-wit').textContent = new Intl.DateTimeFormat('id-ID', optionsWit).format(now);
+}
+
+// Jalankan jam setiap 1 detik
+setInterval(updateIndonesiaClocks, 1000);
+updateIndonesiaClocks();
+
+// ==========================================
+// 2. FIREBASE AUTH LOGIC & PROFIL KUSTOM
 // ==========================================
 const btnAuthAction = document.getElementById('btn-auth-action');
 const tabLoginBtn = document.getElementById('tab-login-btn');
@@ -118,6 +112,14 @@ const tabRegisterBtn = document.getElementById('tab-register-btn');
 const loginForm = document.getElementById('loginForm');
 const registerForm = document.getElementById('registerForm');
 const authAlert = document.getElementById('authAlert');
+
+const updateProfileForm = document.getElementById('updateProfileForm');
+const profileDisplayName = document.getElementById('profileDisplayName');
+const profileEmail = document.getElementById('profileEmail');
+const profileAvatarSeed = document.getElementById('profileAvatarSeed');
+const profileAvatarPreview = document.getElementById('profileAvatarPreview');
+const profileAlert = document.getElementById('profileAlert');
+const btnModalLogout = document.getElementById('btn-modal-logout');
 
 tabLoginBtn.addEventListener('click', () => {
     tabLoginBtn.classList.add('active');
@@ -137,12 +139,70 @@ tabRegisterBtn.addEventListener('click', () => {
 
 btnAuthAction.addEventListener('click', () => {
     if (auth.currentUser) {
-        if (confirm("Apakah Anda yakin ingin keluar dari akun Beacon TV?")) {
-            signOut(auth);
-        }
+        openProfileModal();
     } else {
         const authModal = new bootstrap.Modal(document.getElementById('authModal'));
         authModal.show();
+    }
+});
+
+function openProfileModal() {
+    const user = auth.currentUser;
+    if (!user) return;
+
+    profileDisplayName.value = user.displayName || '';
+    profileEmail.value = user.email || '';
+    
+    const avatarUrl = user.photoURL || `https://api.dicebear.com/7.x/bottts/svg?seed=${user.uid}`;
+    profileAvatarPreview.src = avatarUrl;
+    
+    profileAlert.classList.add('d-none');
+    const userProfileModal = new bootstrap.Modal(document.getElementById('userProfileModal'));
+    userProfileModal.show();
+}
+
+profileAvatarSeed.addEventListener('change', function() {
+    const seed = this.value;
+    profileAvatarPreview.src = `https://api.dicebear.com/7.x/bottts/svg?seed=${seed}`;
+});
+
+updateProfileForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const user = auth.currentUser;
+    if (!user) return;
+
+    const newName = profileDisplayName.value;
+    const selectedSeed = profileAvatarSeed.value;
+    const newAvatarUrl = `https://api.dicebear.com/7.x/bottts/svg?seed=${selectedSeed}`;
+
+    try {
+        await updateProfile(user, {
+            displayName: newName,
+            photoURL: newAvatarUrl
+        });
+
+        showProfileAlert("Profil berhasil diperbarui!", "success");
+        updateNavbarUserUI(user);
+
+        setTimeout(() => {
+            const modalEl = document.getElementById('userProfileModal');
+            const modalInstance = bootstrap.Modal.getInstance(modalEl);
+            if (modalInstance) modalInstance.hide();
+        }, 1200);
+
+    } catch (error) {
+        showProfileAlert("Gagal memperbarui profil: " + error.message, "danger");
+    }
+});
+
+btnModalLogout.addEventListener('click', async () => {
+    try {
+        await signOut(auth);
+        const modalEl = document.getElementById('userProfileModal');
+        const modalInstance = bootstrap.Modal.getInstance(modalEl);
+        if (modalInstance) modalInstance.hide();
+    } catch (error) {
+        alert("Gagal keluar dari akun: " + error.message);
     }
 });
 
@@ -153,10 +213,15 @@ registerForm.addEventListener('submit', async (e) => {
     const password = document.getElementById('regPassword').value;
 
     try {
+        const defaultAvatar = `https://api.dicebear.com/7.x/bottts/svg?seed=${name.replace(/\s+/g, '')}`;
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-        await updateProfile(userCredential.user, { displayName: name });
         
-        showAuthAlert("Akun berhasil dibuat! Mengalihkan...", "success");
+        await updateProfile(userCredential.user, { 
+            displayName: name,
+            photoURL: defaultAvatar
+        });
+        
+        showAuthAlert("Akun berhasil dibuat!", "success");
         setTimeout(() => {
             const modalEl = document.getElementById('authModal');
             const modalInstance = bootstrap.Modal.getInstance(modalEl);
@@ -175,7 +240,7 @@ loginForm.addEventListener('submit', async (e) => {
 
     try {
         await signInWithEmailAndPassword(auth, email, password);
-        showAuthAlert("Berhasil masuk! Selamat datang.", "success");
+        showAuthAlert("Berhasil masuk!", "success");
         setTimeout(() => {
             const modalEl = document.getElementById('authModal');
             const modalInstance = bootstrap.Modal.getInstance(modalEl);
@@ -189,19 +254,34 @@ loginForm.addEventListener('submit', async (e) => {
 
 onAuthStateChanged(auth, (user) => {
     if (user) {
-        const name = user.displayName || user.email.split('@')[0];
-        btnAuthAction.className = "btn btn-outline-light btn-sm rounded-pill px-3 fw-bold";
-        btnAuthAction.innerHTML = `<i class="fa-solid fa-user-check text-success me-1"></i> ${name}`;
+        updateNavbarUserUI(user);
     } else {
         btnAuthAction.className = "btn btn-danger btn-sm rounded-pill px-3 fw-bold";
-        btnAuthAction.innerHTML = `<i class="fa-solid fa-right-to-bracket me-1"></i> Masuk`;
+        btnAuthAction.innerHTML = `<i class="fa-solid fa-right-to-bracket me-1"></i> <span>Masuk</span>`;
     }
 });
+
+function updateNavbarUserUI(user) {
+    const name = user.displayName || user.email.split('@')[0];
+    const avatar = user.photoURL || `https://api.dicebear.com/7.x/bottts/svg?seed=${user.uid}`;
+
+    btnAuthAction.className = "btn btn-outline-light btn-sm rounded-pill px-3 fw-bold d-flex align-items-center gap-2";
+    btnAuthAction.innerHTML = `
+        <img src="${avatar}" class="rounded-circle" width="22" height="22" style="object-fit: cover;">
+        <span>${name}</span>
+    `;
+}
 
 function showAuthAlert(msg, type) {
     authAlert.className = `alert alert-${type} py-2 small fw-bold mb-3`;
     authAlert.textContent = msg;
     authAlert.classList.remove('d-none');
+}
+
+function showProfileAlert(msg, type) {
+    profileAlert.className = `alert alert-${type} py-2 small fw-bold mb-3`;
+    profileAlert.textContent = msg;
+    profileAlert.classList.remove('d-none');
 }
 
 function getFirebaseErrorMessage(code) {
@@ -215,33 +295,21 @@ function getFirebaseErrorMessage(code) {
 }
 
 // ==========================================
-// 2. PENGECEKAN LISENSI SALURAN EXPIRED
+// 3. PENGECEKAN LISENSI & STREAM PLAYER LOGIC
 // ==========================================
 function isChannelLicenseValid(channel) {
     if (channel.isEndlessOwned) return true;
     if (!channel.expiryDate) return true;
-
-    const now = new Date();
-    const expiry = new Date(channel.expiryDate);
-
-    return now < expiry;
+    return new Date() < new Date(channel.expiryDate);
 }
 
 function isVisibleInList(channel) {
     if (channel.isEndlessOwned) return true;
     if (!channel.expiryDate) return true;
-
-    const now = new Date();
-    const expiry = new Date(channel.expiryDate);
-    const thirtyDaysInMs = 30 * 24 * 60 * 60 * 1000;
-    const hideDate = new Date(expiry.getTime() + thirtyDaysInMs);
-
-    return now < hideDate;
+    const hideDate = new Date(new Date(channel.expiryDate).getTime() + (30 * 24 * 60 * 60 * 1000));
+    return new Date() < hideDate;
 }
 
-// ==========================================
-// 3. INITIALIZE PLYR & UI OVERLAY LOGIC
-// ==========================================
 function initPlyr() {
     plyrPlayer = new Plyr(video, {
         controls: ['play-large', 'play', 'mute', 'volume', 'settings', 'pip', 'fullscreen'],
@@ -256,18 +324,12 @@ function prepareStream(channel) {
     if (plyrPlayer) { plyrPlayer.stop(); }
     video.removeAttribute('src');
 
-    // -------------------------------------------------------------
-    // KONDISI 1: Masa Penayangan Saluran Habis (Expired)
-    // -------------------------------------------------------------
     if (!isChannelLicenseValid(channel)) {
         showRestrictionScreen(PATH_LICENSE_EXPIRED_IMAGE);
         playTitle.textContent = "Saluran Non-Aktif (Izin Layanan Habis): " + channel.name;
         return;
     }
 
-    // -------------------------------------------------------------
-    // KONDISI 2: Siaran Normal Siap Diputar
-    // -------------------------------------------------------------
     hideRestrictionScreen();
     playTitle.textContent = "Saluran Terpilih: " + channel.name;
 
@@ -282,9 +344,7 @@ function prepareStream(channel) {
 
 function showRestrictionScreen(imagePath) {
     playOverlay.style.setProperty('display', 'none', 'important');
-    if (restrictionImage) {
-        restrictionImage.src = imagePath;
-    }
+    if (restrictionImage) { restrictionImage.src = imagePath; }
     blackoutOverlay.classList.remove('d-none');
     blackoutOverlay.classList.add('d-flex');
 }
@@ -294,27 +354,16 @@ function hideRestrictionScreen() {
     blackoutOverlay.classList.add('d-none');
 }
 
-// ==========================================
-// 4. STREAMING ENGINE DENGAN AUTO-FALLBACK HTTP ERROR (AUTOMATIC BLACKOUT)
-// ==========================================
 function startStream() {
     if (!selectedChannel || !isChannelLicenseValid(selectedChannel)) return;
 
     playTitle.textContent = "Sedang Memutar: " + selectedChannel.name;
     playOverlay.style.setProperty('display', 'none', 'important');
 
-    if (hls) {
-        hls.destroy();
-        hls = null;
-    }
+    if (hls) { hls.destroy(); hls = null; }
 
     if (Hls.isSupported()) {
-        hls = new Hls({
-            manifestLoadingMaxRetry: 2,
-            levelLoadingMaxRetry: 2,
-            fragLoadingMaxRetry: 2
-        });
-
+        hls = new Hls({ manifestLoadingMaxRetry: 2, levelLoadingMaxRetry: 2, fragLoadingMaxRetry: 2 });
         hls.loadSource(selectedChannel.url);
         hls.attachMedia(video);
 
@@ -323,50 +372,32 @@ function startStream() {
             plyrPlayer.play();
         });
 
-        // -----------------------------------------------------------------
-        // AUTO-FALLBACK: SENSING PEMBLOKIRAN HAK SIAR DARI SERVER TV ASAL
-        // -----------------------------------------------------------------
         hls.on(Hls.Events.ERROR, function (event, data) {
             if (data.fatal) {
                 switch (data.type) {
                     case Hls.ErrorTypes.NETWORK_ERROR:
                         const responseCode = data.response ? data.response.code : 0;
-                        
-                        // Respon HTTP 401 (Unauthorized), 403 (Forbidden), atau 404 (Not Found)
-                        // Mengindikasikan Server Stasiun TV sedang memblokir akses akibat Hak Siar/Geoblock
                         if ([401, 403, 404].includes(responseCode)) {
-                            console.warn(`[Beacon TV Auto-Fallback] Hak Siar / Geoblock Terdeteksi Aktif di ${selectedChannel.name} (Respon HTTP ${responseCode})`);
-                            
                             hls.destroy();
                             hls = null;
-
-                            // Tampilkan Layar Blackout Peringatan Hak Siar secara Otomatis
                             showRestrictionScreen(PATH_PROGRAM_RESTRICTED_IMAGE);
                             playTitle.textContent = "Dibatasi Sementara (Program Hak Siar): " + selectedChannel.name;
                         } else {
-                            // Error Jaringan Biasa
                             hls.startLoad();
                         }
                         break;
-
                     case Hls.ErrorTypes.MEDIA_ERROR:
                         hls.recoverMediaError();
                         break;
-
                     default:
                         hls.destroy();
                         break;
                 }
             }
         });
-
     } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-        // Fallback Native Safari Browser
         video.src = selectedChannel.url;
-        video.addEventListener('loadedmetadata', function() {
-            plyrPlayer.play();
-        });
-
+        video.addEventListener('loadedmetadata', function() { plyrPlayer.play(); });
         video.onerror = function() {
             showRestrictionScreen(PATH_PROGRAM_RESTRICTED_IMAGE);
             playTitle.textContent = "Dibatasi Sementara (Program Hak Siar): " + selectedChannel.name;
@@ -375,18 +406,31 @@ function startStream() {
 }
 
 // ==========================================
-// 5. RENDER DAFTAR SALURAN
+// 4. RENDER & FILTER DAFTAR SALURAN
 // ==========================================
 function initChannels() {
     channelsContainer.innerHTML = ''; 
-    const visibleChannels = channels.filter(isVisibleInList);
+    
+    let filteredChannels = channels.filter(isVisibleInList);
 
-    if (visibleChannels.length === 0) {
-        channelsContainer.innerHTML = `<div class="p-3 text-muted text-center">Tidak ada saluran yang tersedia saat ini.</div>`;
+    // Filter berdasarkan Kategori
+    if (currentCategoryFilter === 'official') {
+        filteredChannels = filteredChannels.filter(c => c.isEndlessOwned);
+    } else if (currentCategoryFilter === 'national') {
+        filteredChannels = filteredChannels.filter(c => !c.isEndlessOwned);
+    }
+
+    // Filter berdasarkan Input Pencarian (Search Query)
+    if (searchQuery.trim() !== '') {
+        filteredChannels = filteredChannels.filter(c => c.name.toLowerCase().includes(searchQuery.toLowerCase()));
+    }
+
+    if (filteredChannels.length === 0) {
+        channelsContainer.innerHTML = `<div class="p-3 text-muted text-center small">Tidak ada saluran TV yang ditemukan.</div>`;
         return;
     }
 
-    visibleChannels.forEach((channel) => {
+    filteredChannels.forEach((channel) => {
         const item = document.createElement('div');
         const isLicenseValid = isChannelLicenseValid(channel);
         
@@ -404,7 +448,7 @@ function initChannels() {
                 <span>${channel.name}</span>
                 ${badge}
             </div>
-            <i class="fa-solid fa-shield-cat text-muted fs-6"></i>
+            <i class="fa-solid fa-tv text-muted fs-6"></i>
         `;
         
         item.addEventListener('click', function() {
@@ -416,13 +460,34 @@ function initChannels() {
         channelsContainer.appendChild(item);
     });
 
-    if (!selectedChannel && visibleChannels.length > 0) {
-        prepareStream(visibleChannels[0]);
+    if (!selectedChannel && filteredChannels.length > 0) {
+        prepareStream(filteredChannels[0]);
     }
 }
 
+// Event Search & Filter Category
+document.getElementById('search-channel-input').addEventListener('input', function(e) {
+    searchQuery = e.target.value;
+    initChannels();
+});
+
+document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+        document.querySelectorAll('.filter-btn').forEach(b => {
+            b.classList.remove('active', 'btn-outline-danger');
+            b.classList.add('btn-outline-secondary', 'text-light');
+        });
+        
+        this.classList.add('active', 'btn-outline-danger');
+        this.classList.remove('btn-outline-secondary', 'text-light');
+        
+        currentCategoryFilter = this.getAttribute('data-category');
+        initChannels();
+    });
+});
+
 // ==========================================
-// 6. LAPORAN BUG & KENDALA (EMAILJS)
+// 5. LAPORAN BUG & KENDALA (EMAILJS)
 // ==========================================
 function openReportModal() {
     const reportForm = document.getElementById('reportForm');
@@ -466,8 +531,7 @@ document.querySelectorAll('.category-card').forEach(card => {
             const bugOptions = [
                 { val: "ui_broken", text: "Tampilan / Layout Website Rusak" },
                 { val: "button_not_working", text: "Fitur / Tombol Tidak Mau Diklik" },
-                { val: "search_error", text: "Pencarian Saluran Tidak Berfungsi" },
-                { val: "player_controls_bug", text: "Kontrol Player Error" }
+                { val: "search_error", text: "Pencarian Saluran Tidak Berfungsi" }
             ];
             bugOptions.forEach(opt => typeSelect.innerHTML += `<option value="${opt.val}">${opt.text}</option>`);
 
@@ -478,15 +542,13 @@ document.querySelectorAll('.category-card').forEach(card => {
             const streamOptions = [
                 { val: "stream_offline", text: "Siaran Terputus / Black Screen / Offline" },
                 { val: "audio_issue", text: "Audio Mati / Suara Tidak Sinkron" },
-                { val: "video_lag", text: "Video Lag / Buffering Terus-Menerus" },
-                { val: "wrong_stream", text: "Acara Tidak Sesuai Nama Saluran" }
+                { val: "video_lag", text: "Video Lag / Buffering Terus-Menerus" }
             ];
             streamOptions.forEach(opt => typeSelect.innerHTML += `<option value="${opt.val}">${opt.text}</option>`);
 
         } else {
             channelContainer.classList.add('d-none');
             typeSelect.innerHTML += `<option value="general_feedback">Saran / Masukan Fitur</option>`;
-            typeSelect.innerHTML += `<option value="other">Lain-lain</option>`;
         }
     });
 });
@@ -517,7 +579,7 @@ document.getElementById('reportForm').addEventListener('submit', function(e) {
     };
 
     emailjs.send('service_ulavdup', 'template_qky3acq', templateParams)
-        .then(function(response) {
+        .then(function() {
             btnSubmit.disabled = false;
             btnSubmit.innerHTML = `<i class="fa-solid fa-paper-plane"></i> Kirim Laporan`;
 
@@ -538,13 +600,10 @@ document.getElementById('reportForm').addEventListener('submit', function(e) {
             alertBox.className = "alert alert-danger py-2 small fw-bold";
             alertBox.textContent = "Gagal mengirim laporan. Silakan coba beberapa saat lagi.";
             alertBox.classList.remove('d-none');
-            console.error('EmailJS Error:', error);
         });
 });
 
-// ==========================================
-// 7. INITIALIZATION ON LOAD
-// ==========================================
+// INITIALIZATION
 window.addEventListener('DOMContentLoaded', () => {
     initPlyr();
     initChannels();
