@@ -185,11 +185,11 @@ body {
 .channel-list {
     max-height: 420px;
     overflow-y: auto;
-    background-color: rgba(26, 26, 26, 0.85);
+    background-color: rgba(48, 48, 48, 0.88); /* Hitam terang/abu-abu gelap yang soft */
     border-radius: 12px;
     padding: 12px;
     backdrop-filter: blur(5px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.15);
 }
 
 .channel-item {
@@ -272,15 +272,22 @@ body {
     z-index: 5;
 }
 
+/* Mengatur warna input utama dan background kolom search */
 .modern-input {
-    background-color: rgba(255, 255, 255, 0.04) !important;
-    border: 1px solid rgba(255, 255, 255, 0.12) !important;
-    color: #ffffff !important;
+    background-color: rgba(255, 255, 255, 0.08) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    color: #ffffff !important; /* Warna teks yang diketik pengguna (Putih Terang) */
     padding-left: 42px !important;
     height: 44px;
     border-radius: 12px !important;
     font-size: 0.9rem;
     transition: all 0.25s ease;
+}
+
+/* Mengubah warna teks placeholder ("Cari nama saluran TV...") */
+.modern-input::placeholder {
+    color: #b0b0b0 !important; /* Abu-abu terang agar mudah dibaca */
+    opacity: 1;
 }
 
 .modern-input:focus {
