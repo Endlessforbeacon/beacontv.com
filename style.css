@@ -196,14 +196,14 @@ body {
     cursor: pointer;
     padding: 12px 15px;
     margin-bottom: 8px;
-    background-color: rgba(42, 42, 42, 0.9);
+    background-color: hsla(98, 93%, 61%, 0.747);
     border-radius: 8px;
     transition: all 0.2s ease;
     border-left: 4px solid transparent;
 }
 
 .channel-item:hover {
-    background-color: rgba(58, 58, 58, 0.9);
+    background-color: hsla(98, 93%, 61%, 0.747);
     border-left-color: #ff4757;
 }
 
