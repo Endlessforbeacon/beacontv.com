@@ -217,7 +217,7 @@ body {
 
 /* SISTEM UBAH: Pesan teks saat proses cari saluran tidak ditemukan */
 .no-channel-msg {
-    color: #ff4757; /* Silakan ganti kode warna ini sesuai selera (misal: #ffffff untuk putih terang) */
+    color: hsl(0, 4%, 95%); /* Silakan ganti kode warna ini sesuai selera (misal: #ffffff untuk putih terang) */
     font-weight: 600;
     letter-spacing: 0.3px;
 }
