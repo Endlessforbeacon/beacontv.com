@@ -45,7 +45,35 @@ const channels = [
         category: "official"
     },
     {
-        name: "Endless For Beacon Sports Channel",
+        name: "Endless For Beacon Sports Channel 1",
+        url: "https://live.antaranews.com/hls/live.m3u8",
+        poster: "logo-antara.jpg",
+        isEndlessOwned: true,
+        category: "official"
+    },
+    {
+        name: "Beacon Sports Channel 2",
+        url: "https://live.antaranews.com/hls/live.m3u8",
+        poster: "logo-antara.jpg",
+        isEndlessOwned: true,
+        category: "official"
+    },
+    {
+        name: "Endless For Beacon Music TV Channel",
+        url: "https://live.antaranews.com/hls/live.m3u8",
+        poster: "logo-antara.jpg",
+        isEndlessOwned: true,
+        category: "official"
+    },
+    {
+        name: "Beacon Kids TV",
+        url: "https://live.antaranews.com/hls/live.m3u8",
+        poster: "logo-antara.jpg",
+        isEndlessOwned: true,
+        category: "official"
+    },
+    {
+        name: "Endless For Beacon Movie & Drama",
         url: "https://live.antaranews.com/hls/live.m3u8",
         poster: "logo-antara.jpg",
         isEndlessOwned: true,
