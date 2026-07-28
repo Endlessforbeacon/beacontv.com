@@ -257,7 +257,7 @@ onAuthStateChanged(auth, (user) => {
         updateNavbarUserUI(user);
     } else {
         btnAuthAction.className = "btn btn-danger btn-sm rounded-pill px-3 fw-bold";
-        btnAuthAction.innerHTML = `<i class="fa-solid fa-right-to-bracket me-1"></i> <span>Masuk</span>`;
+        btnAuthAction.innerHTML = `<i class="fa-solid fa-right-to-bracket me-1"></i> Masuk`;
     }
 });
 
