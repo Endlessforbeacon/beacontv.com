@@ -185,7 +185,7 @@ body {
 .channel-list {
     max-height: 420px;
     overflow-y: auto;
-    background-color: rgba(48, 48, 48, 0.88); /* Hitam terang/abu-abu gelap yang soft */
+    background-color: rgba(48, 48, 48, 0.88); /* SISTEM UBAH: Hitam yang lebih terang dari sebelumnya */
     border-radius: 12px;
     padding: 12px;
     backdrop-filter: blur(5px);
@@ -214,6 +214,13 @@ body {
 }
 
 .channel-item.expired-item { opacity: 0.75; }
+
+/* SISTEM UBAH: Pesan teks saat proses cari saluran tidak ditemukan */
+.no-channel-msg {
+    color: #ff4757; /* Silakan ganti kode warna ini sesuai selera (misal: #ffffff untuk putih terang) */
+    font-weight: 600;
+    letter-spacing: 0.3px;
+}
 
 /* ==========================================
    STYLING AUTH CARD & MODAL
@@ -272,11 +279,11 @@ body {
     z-index: 5;
 }
 
-/* Mengatur warna input utama dan background kolom search */
+/* SISTEM UBAH: Input text kolom search dan modifikasi warna placeholder */
 .modern-input {
     background-color: rgba(255, 255, 255, 0.08) !important;
     border: 1px solid rgba(255, 255, 255, 0.2) !important;
-    color: #ffffff !important; /* Warna teks yang diketik pengguna (Putih Terang) */
+    color: #ffffff !important; /* Warna tulisan saat mengetik */
     padding-left: 42px !important;
     height: 44px;
     border-radius: 12px !important;
@@ -284,16 +291,15 @@ body {
     transition: all 0.25s ease;
 }
 
-/* Mengubah warna teks placeholder ("Cari nama saluran TV...") */
-.modern-input::placeholder {
-    color: #b0b0b0 !important; /* Abu-abu terang agar mudah dibaca */
-    opacity: 1;
-}
-
 .modern-input:focus {
     border-color: #ff4757 !important;
     box-shadow: 0 0 12px rgba(255, 71, 87, 0.3) !important;
     background-color: rgba(255, 255, 255, 0.07) !important;
+}
+
+.modern-input::placeholder {
+    color: #b0b0b0 !important; /* Warna teks placeholder pencarian */
+    opacity: 1;
 }
 
 .shadow-danger {
@@ -357,7 +363,6 @@ body {
 
 /* 2. LAYAR HP / SMARTPHONE (Lebar < 768px) */
 @media (max-width: 767.98px) {
-    /* Mengatur ulang posisi Jam 3 Zona Waktu agar ke baris baru */
     .timezone-clock-wrapper {
         width: 100%;
         justify-content: center;
@@ -375,24 +380,20 @@ body {
         padding-left: 0.5rem !important;
     }
 
-    /* Mengubah tombol header agar hanya menampilkan ikon atau font kecil */
     #btn-open-report, #btn-auth-action {
         padding: 6px 12px !important;
         font-size: 0.75rem;
     }
 
-    /* Tombol Tonton di Player */
     #start-stream-btn {
         font-size: 0.85rem !important;
         padding: 10px 18px !important;
     }
 
-    /* Card modal di HP */
     .auth-card {
         margin: 10px;
     }
 
-    /* Scroll menyamping yang mulus pada Filter Kategori */
     .category-filter-wrapper {
         scroll-behavior: smooth;
         -webkit-overflow-scrolling: touch;
@@ -410,6 +411,6 @@ body {
     }
 
     .nav-buttons-wrapper button span {
-        display: none; /* Sembunyikan teks tombol di HP yang sangat kecil, hanya tampilkan ikon */
+        display: none;
     }
 }
