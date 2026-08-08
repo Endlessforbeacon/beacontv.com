@@ -105,6 +105,7 @@ const playOverlay = document.getElementById('play-overlay');
 const blackoutOverlay = document.getElementById('blackout-overlay');
 const restrictionImage = document.getElementById('restriction-image');
 const startStreamBtn = document.getElementById('start-stream-btn');
+const playerWatermark = document.getElementById('player-watermark');
 
 let hls = null;
 let plyrPlayer = null;
@@ -127,7 +128,6 @@ function updateIndonesiaClocks() {
     document.getElementById('clock-wit').textContent = new Intl.DateTimeFormat('id-ID', optionsWit).format(now);
 }
 
-// Jalankan jam setiap 1 detik
 setInterval(updateIndonesiaClocks, 1000);
 updateIndonesiaClocks();
 
@@ -323,7 +323,7 @@ function getFirebaseErrorMessage(code) {
 }
 
 // ==========================================
-// 3. PENGECEKAN LISENSI & STREAM PLAYER LOGIC
+// 3. PENGECEKAN LISENSI & DETEKSI HAK SIAR/GEOBLOCK
 // ==========================================
 function isChannelLicenseValid(channel) {
     if (channel.isEndlessOwned) return true;
@@ -372,6 +372,8 @@ function prepareStream(channel) {
 
 function showRestrictionScreen(imagePath) {
     playOverlay.style.setProperty('display', 'none', 'important');
+    if (playerWatermark) playerWatermark.style.display = 'none'; // Sembunyikan watermark saat blackout
+
     if (restrictionImage) { restrictionImage.src = imagePath; }
     blackoutOverlay.classList.remove('d-none');
     blackoutOverlay.classList.add('d-flex');
@@ -380,6 +382,7 @@ function showRestrictionScreen(imagePath) {
 function hideRestrictionScreen() {
     blackoutOverlay.classList.remove('d-flex');
     blackoutOverlay.classList.add('d-none');
+    if (playerWatermark) playerWatermark.style.display = 'block'; // Tampilkan kembali watermark
 }
 
 function startStream() {
@@ -391,7 +394,7 @@ function startStream() {
     if (hls) { hls.destroy(); hls = null; }
 
     if (Hls.isSupported()) {
-        hls = new Hls({ manifestLoadingMaxRetry: 2, levelLoadingMaxRetry: 2, fragLoadingMaxRetry: 2 });
+        hls = new Hls({ manifestLoadingMaxRetry: 1, levelLoadingMaxRetry: 1, fragLoadingMaxRetry: 1 });
         hls.loadSource(selectedChannel.url);
         hls.attachMedia(video);
 
@@ -405,7 +408,7 @@ function startStream() {
                 switch (data.type) {
                     case Hls.ErrorTypes.NETWORK_ERROR:
                         const responseCode = data.response ? data.response.code : 0;
-                        if ([401, 403, 404].includes(responseCode)) {
+                        if ([0, 401, 403, 404].includes(responseCode)) {
                             hls.destroy();
                             hls = null;
                             showRestrictionScreen(PATH_PROGRAM_RESTRICTED_IMAGE);
@@ -419,6 +422,8 @@ function startStream() {
                         break;
                     default:
                         hls.destroy();
+                        showRestrictionScreen(PATH_PROGRAM_RESTRICTED_IMAGE);
+                        playTitle.textContent = "Dibatasi Sementara (Program Hak Siar): " + selectedChannel.name;
                         break;
                 }
             }
@@ -441,20 +446,18 @@ function initChannels() {
     
     let filteredChannels = channels.filter(isVisibleInList);
 
-    // Filter berdasarkan Kategori
     if (currentCategoryFilter === 'official') {
         filteredChannels = filteredChannels.filter(c => c.isEndlessOwned);
     } else if (currentCategoryFilter === 'national') {
         filteredChannels = filteredChannels.filter(c => !c.isEndlessOwned);
     }
 
-    // Filter berdasarkan Input Pencarian (Search Query)
     if (searchQuery.trim() !== '') {
         filteredChannels = filteredChannels.filter(c => c.name.toLowerCase().includes(searchQuery.toLowerCase()));
     }
 
     if (filteredChannels.length === 0) {
-        channelsContainer.innerHTML = `<div class="p-3 text-muted text-center small">Tidak ada saluran TV yang ditemukan.</div>`;
+        channelsContainer.innerHTML = `<div class="p-3 no-channel-msg text-center small">Tidak ada saluran TV yang ditemukan.</div>`;
         return;
     }
 
@@ -493,7 +496,6 @@ function initChannels() {
     }
 }
 
-// Event Search & Filter Category
 document.getElementById('search-channel-input').addEventListener('input', function(e) {
     searchQuery = e.target.value;
     initChannels();

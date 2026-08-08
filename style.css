@@ -29,7 +29,7 @@ body {
 }
 
 /* ==========================================
-   VIDEO PLAYER & OVERLAY GAMBAR
+   VIDEO PLAYER & OVERLAY WATERMARK BEACON TV
    ========================================== */
 .player-container {
     background-color: #000000;
@@ -50,37 +50,28 @@ body {
     aspect-ratio: 16/9;
 }
 
-#play-overlay {
-    background-color: rgba(0, 0, 0, 0.55);
-    backdrop-filter: blur(4px);
-    z-index: 20;
+/* Watermark Logo Beacon TV di Bawah Kiri Player */
+#player-watermark {
+    bottom: 60px; /* Memberi jarak di atas kontroler player agar tidak tertutup tombol Play/Volume */
+    left: 15px;   /* Posisikan di pojok kiri */
+    top: auto;    /* Menghapus posisi atas sebelumnya */
+    right: auto;  /* Menghapus posisi kanan sebelumnya */
+    height: 32px;
+    width: auto;
+    z-index: 10;
+    opacity: 0.85;
+    pointer-events: none; /* Agar tidak mengganggu klik mouse pada kontroler player */
+    filter: drop-shadow(0px 2px 4px rgba(0, 0, 0, 0.8));
     transition: all 0.3s ease;
 }
 
-#start-stream-btn {
-    background-color: #ff4757;
-    border: none;
-    letter-spacing: 0.5px;
-    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-
-#start-stream-btn:hover {
-    transform: scale(1.08);
-    background-color: #ff2e43;
-    box-shadow: 0 0 25px rgba(255, 71, 87, 0.7) !important;
-}
-
-#blackout-overlay {
-    background-color: #0d0d0e;
-    z-index: 30;
-    border-radius: 12px;
-    overflow: hidden;
-}
-
-#restriction-image {
-    max-width: 100%;
-    max-height: 100%;
-    object-fit: contain;
+/* Penyesuaian Responsif Layar HP/Mobile */
+@media (max-width: 767.98px) {
+    #player-watermark {
+        bottom: 50px;
+        left: 10px;
+        height: 22px;
+    }
 }
 
 /* ==========================================
@@ -109,11 +100,6 @@ body {
 /* ==========================================
    STYLING MODERN UI REPORT & AUTH MODAL
    ========================================== */
-.auth-sidebar {
-    background: linear-gradient(135deg, #1f080a 0%, #0d0d0e 100%);
-    border-right: 1px solid rgba(255, 255, 255, 0.08);
-}
-
 .category-card {
     background-color: rgba(255, 255, 255, 0.04);
     border: 1px solid rgba(255, 255, 255, 0.1);
@@ -177,15 +163,13 @@ body {
     box-shadow: 0 0 12px rgba(255, 71, 87, 0.3) !important;
 }
 
-.fs-7 { font-size: 0.75rem; }
-
 /* ==========================================
    SIDEBAR DAFTAR TV
    ========================================== */
 .channel-list {
     max-height: 420px;
     overflow-y: auto;
-    background-color: rgba(48, 48, 48, 0.88); /* SISTEM UBAH: Hitam yang lebih terang dari sebelumnya */
+    background-color: rgba(48, 48, 48, 0.88);
     border-radius: 12px;
     padding: 12px;
     backdrop-filter: blur(5px);
@@ -215,11 +199,10 @@ body {
 
 .channel-item.expired-item { opacity: 0.75; }
 
-/* SISTEM UBAH: Pesan teks saat proses cari saluran tidak ditemukan */
-.no-channel-msg {
-    color: hsl(0, 4%, 95%); /* Silakan ganti kode warna ini sesuai selera (misal: #ffffff untuk putih terang) */
-    font-weight: 600;
-    letter-spacing: 0.3px;
+.btn-xs {
+    padding: 2px 8px;
+    font-size: 0.72rem;
+    border-radius: 20px;
 }
 
 /* ==========================================
@@ -230,15 +213,6 @@ body {
     border: 1px solid rgba(255, 255, 255, 0.1) !important;
     box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8) !important;
 }
-
-.auth-sidebar-overlay {
-    position: absolute;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: radial-gradient(circle at top left, rgba(255, 71, 87, 0.25), transparent 70%);
-    pointer-events: none;
-}
-
-.bg-dark-glass { background-color: hsla(56, 100%, 58%, 0.843); }
 
 .auth-tabs-wrapper {
     display: flex;
@@ -279,11 +253,10 @@ body {
     z-index: 5;
 }
 
-/* SISTEM UBAH: Input text kolom search dan modifikasi warna placeholder */
 .modern-input {
     background-color: rgba(255, 255, 255, 0.08) !important;
     border: 1px solid rgba(255, 255, 255, 0.2) !important;
-    color: #ffffff !important; /* Warna tulisan saat mengetik */
+    color: #ffffff !important;
     padding-left: 42px !important;
     height: 44px;
     border-radius: 12px !important;
@@ -298,7 +271,7 @@ body {
 }
 
 .modern-input::placeholder {
-    color: #b0b0b0 !important; /* Warna teks placeholder pencarian */
+    color: #b0b0b0 !important;
     opacity: 1;
 }
 
@@ -313,71 +286,25 @@ body {
 }
 
 .py-2-5 { padding-top: 10px; padding-bottom: 10px; }
-.text-light-50 { color: rgba(255, 255, 255, 0.65); }
-
-/* FOOTER & SCROLLBAR */
-.footer-custom {
-    background-color: #ff4f4fd2;
-    backdrop-filter: blur(5px);
-}
-
-.social-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 40px;
-    height: 40px;
-    background-color: #2a2a2a;
-    color: #ffffff;
-    border-radius: 50%;
-    font-size: 1.1rem;
-    text-decoration: none;
-    transition: all 0.3s ease;
-}
-
-.social-icon:hover {
-    background-color: #ff4757;
-    color: #ffffff;
-    transform: translateY(-3px);
-    box-shadow: 0 5px 15px rgba(255, 71, 87, 0.4);
-}
 
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: #1a1a1a; }
 ::-webkit-scrollbar-thumb { background: #ff4757; border-radius: 10px; }
 
-/* ==========================================
-   RESPONSIVE DESIGN & MOBILE OPTIMIZATION
-   ========================================== */
-
-/* 1. LAYAR TABLET & HP (Lebar < 992px) */
-@media (max-width: 991.98px) {
-    .navbar .container {
-        gap: 0.75rem !important;
-    }
-
-    .channel-list {
-        max-height: 320px;
-    }
-}
-
-/* 2. LAYAR HP / SMARTPHONE (Lebar < 768px) */
+/* RESPONSIVE DESIGN */
 @media (max-width: 767.98px) {
+    #player-watermark {
+        top: 10px;
+        right: 10px;
+        height: 24px;
+    }
+
     .timezone-clock-wrapper {
         width: 100%;
         justify-content: center;
         order: 3;
         margin-top: 4px;
         padding: 6px 12px !important;
-    }
-
-    .timezone-clock-wrapper .d-flex {
-        gap: 0.75rem !important;
-        font-size: 0.75rem !important;
-    }
-
-    .clock-item {
-        padding-left: 0.5rem !important;
     }
 
     #btn-open-report, #btn-auth-action {
@@ -388,29 +315,5 @@ body {
     #start-stream-btn {
         font-size: 0.85rem !important;
         padding: 10px 18px !important;
-    }
-
-    .auth-card {
-        margin: 10px;
-    }
-
-    .category-filter-wrapper {
-        scroll-behavior: smooth;
-        -webkit-overflow-scrolling: touch;
-    }
-
-    .category-filter-wrapper::-webkit-scrollbar {
-        display: none;
-    }
-}
-
-/* 3. LAYAR SANGAT KECIL (Lebar < 400px) */
-@media (max-width: 399.98px) {
-    .brand-text {
-        font-size: 1.1rem !important;
-    }
-
-    .nav-buttons-wrapper button span {
-        display: none;
     }
 }
