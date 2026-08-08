@@ -1,310 +1,416 @@
-/* ==========================================================================
-   1. RESET & BASE GLOBAL STYLE (AUTO-PUSH FOOTER TO BOTTOM)
-   ========================================================================== */
-* { 
-    margin: 0; 
-    padding: 0; 
-    box-sizing: border-box; 
-    font-family: 'Plus Jakarta Sans', sans-serif; 
+/* ==========================================
+   STYLING UTAMA HALAMAN & BACKGROUND GAMBAR
+   ========================================== */
+body {
+    background-image: linear-gradient(rgba(18, 18, 18, 0.88), rgba(18, 18, 18, 0.88)), url('Image/Endless\ For\ Beacon\ Background\ \(2024\ -\ 2028\).png');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    color: #ffffff;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    min-height: 100vh;
 }
 
-html {
-    height: 100%;
+.navbar {
+    background-color: rgba(26, 26, 26, 0.95) !important;
+    backdrop-filter: blur(5px);
 }
 
-body { 
-    background: #0f0f11; 
-    min-height: 100vh; 
-    display: flex; 
-    flex-direction: column; 
-    background-image: linear-gradient(rgba(10, 10, 12, 0.82), rgba(10, 10, 12, 0.82)), url('Image/bg.png'); 
-    background-size: cover; 
-    background-position: center; 
-    background-attachment: fixed; 
-    padding-bottom: 0 !important; 
-    position: relative; 
-    overflow-x: hidden; 
+/* STYLING JAM 3 ZONA WAKTU INDONESIA */
+.timezone-clock-wrapper {
+    background-color: #ebfc0766;
+    font-size: 0.82rem;
+    letter-spacing: 0.5px;
 }
 
-/* ==========================================================================
-   2. MAIN HEADER NAVBAR
-   ========================================================================== */
-.main-header { width: 100%; background: rgba(11, 11, 13, 0.8); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255, 255, 255, 0.04); position: fixed; top: 0; left: 0; z-index: 1000; }
-.header-inner { max-width: 1400px; margin: 0 auto; padding: 14px 40px; display: flex; justify-content: space-between; align-items: center; }
-.brand-container { display: flex; align-items: center; gap: 14px; }
-.station-logo { height: 42px; width: 42px; object-fit: contain; }
-.brand-text { display: flex; flex-direction: column; }
-.station-name { font-size: 16px; font-weight: 800; color: #ffffff; letter-spacing: -0.3px; }
-.station-slogan { font-size: 11px; color: #64748b; font-weight: 500; margin-top: 1px; }
-.header-action-container { display: flex; align-items: center; gap: 12px; }
-
-.login-trigger-btn { display: flex; align-items: center; gap: 8px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: #ffffff; padding: 10px 18px; border-radius: 25px; font-size: 13px; font-weight: 700; cursor: pointer; transition: all 0.2s; }
-.login-trigger-btn:hover { background: rgba(255, 255, 255, 0.1); }
-
-.user-profile-nav-container { display: flex; align-items: center; gap: 12px; background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.08); padding: 5px 14px 5px 6px; border-radius: 30px; animation: slideIn 0.3s ease-out; }
-.user-avatar-img { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; border: 2px solid #10b981; }
-.user-name-span { color: #ffffff; font-size: 13px; font-weight: 700; max-width: 110px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.logout-action-btn { background: none; border: none; color: #64748b; font-size: 11px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 4px; margin-left: 4px; }
-.logout-action-btn:hover { color: #ef4444; }
-
-/* ==========================================================================
-   3. CONTENT WRAPPER LAYOUT
-   ========================================================================== */
-.main-content-wrapper { 
-    max-width: 1200px; 
-    margin: 100px auto 40px auto; 
-    padding: 0 20px; 
-    display: flex; 
-    flex-direction: column; 
-    gap: 50px; 
-    width: 100%; 
-    flex: 1 0 auto; /* Memaksa konten utama mengambil sisa ruang agar footer terdorong ke paling bawah */
+.clock-item {
+    font-family: 'Courier New', Courier, monospace;
 }
 
-/* ==========================================================================
-   4. CAPSULE STREAMING PLAYER
-   ========================================================================== */
-.prambors-style-player { width: 100%; background: #18181c; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 80px; padding: 16px 40px 16px 20px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5); position: sticky; top: 90px; z-index: 999; }
-.player-artwork-area { width: 72px; height: 72px; min-width: 72px; min-height: 72px; border-radius: 50%; overflow: hidden; background: #000; border: 2px solid rgba(255, 255, 255, 0.1); flex-shrink: 0; }
-.player-artwork-area img { width: 100%; height: 100%; object-fit: cover; }
-.player-info-area { flex-grow: 1; margin-left: 24px; min-width: 0; display: flex; flex-direction: column; justify-content: center; }
-.listener-count { font-size: 11px; font-weight: 800; color: #ef4444; letter-spacing: 1px; margin-bottom: 4px; }
-#song-title { font-size: 22px; font-weight: 800; color: #ffffff !important; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin: 0; line-height: 1.2; }
-#song-artist { font-size: 14px; color: #94a3b8; font-weight: 500; margin-top: 4px; }
-.player-controls-area { display: flex; align-items: center; gap: 30px; flex-shrink: 0; }
-.volume-box { display: flex; align-items: center; gap: 10px; background: rgba(255, 255, 255, 0.05); padding: 8px 16px; border-radius: 30px; }
-.vol-icon { font-size: 14px; }
-.volume-slider { width: 80px; height: 4px; outline: none; cursor: pointer; }
-.play-pause-circle { width: 64px; height: 64px; min-width: 64px; min-height: 64px; border-radius: 50%; background: #ffffff; border: none; font-size: 20px; color: #000000; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
-.play-pause-circle:hover { background: #10b981; color: #ffffff; }
-
-/* ==========================================================================
-   STATION BRANCH SELECTOR (PILLS)
-   ========================================================================== */
-.station-branch-selector { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
-.branch-pill { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.08); color: #94a3b8; padding: 6px 14px; border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; cursor: pointer; transition: all 0.25s ease; }
-.branch-pill:hover { background: rgba(255, 255, 255, 0.12); border-color: rgba(255, 255, 255, 0.2); color: #ffffff; transform: translateY(-1px); }
-.branch-pill.active { background: rgba(16, 185, 129, 0.15); border-color: #10b981; color: #10b981; box-shadow: 0 0 12px rgba(16, 185, 129, 0.2); }
-
-/* ==========================================================================
-   5. HORIZONTAL TIMELINE SCHEDULE
-   ========================================================================== */
-.schedule-timeline-section { width: 100%; display: flex; flex-direction: column; gap: 20px; }
-.section-tagline { font-size: 10px; font-weight: 800; color: #10b981; letter-spacing: 1.5px; }
-.section-main-title { font-size: 20px; font-weight: 800; color: #ffffff; margin-top: 4px; }
-
-/* Timeline Wrapper & Scroll Area */
-.timeline-container { width: 100%; overflow-x: auto; padding: 30px 10px 20px 10px; scrollbar-width: thin; scrollbar-color: #10b981 rgba(255,255,255,0.05); }
-.timeline-container::-webkit-scrollbar { height: 8px; }
-.timeline-container::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.03); border-radius: 10px; }
-.timeline-container::-webkit-scrollbar-thumb { background: #10b981; border-radius: 10px; }
-
-.timeline-track { display: flex; gap: 30px; position: relative; min-width: max-content; }
-.timeline-track::before { content: ''; position: absolute; top: 10px; left: 0; right: 0; height: 4px; background: rgba(255, 255, 255, 0.08); z-index: 1; border-radius: 2px; }
-
-.timeline-item { display: flex; flex-direction: column; position: relative; width: 320px; }
-.timeline-marker { width: 20px; height: 20px; border-radius: 50%; background: #18181c; border: 4px solid #64748b; z-index: 2; margin-bottom: 20px; transition: all 0.3s ease; }
-.timeline-item.highlight .timeline-marker,
-.timeline-item:hover .timeline-marker { border-color: #10b981; background: #10b981; box-shadow: 0 0 12px rgba(16, 185, 129, 0.8); }
-
-/* Timeline Card Design */
-.timeline-card { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 20px; overflow: hidden; display: flex; flex-direction: column; height: 100%; transition: all 0.3s; }
-.timeline-item:hover .timeline-card { transform: translateY(-6px); border-color: rgba(255, 255, 255, 0.2); }
-.timeline-item.highlight .timeline-card { border-color: rgba(16, 185, 129, 0.4); background: rgba(16, 185, 129, 0.02); }
-
-.timeline-card .p-card-banner { width: 100%; height: 140px; overflow: hidden; background: #18181b; }
-.timeline-card .p-card-banner img { width: 100%; height: 100%; object-fit: cover; }
-.timeline-card .p-card-content { padding: 18px; display: flex; flex-direction: column; gap: 10px; flex-grow: 1; }
-.timeline-card .p-card-time { font-size: 11px; font-weight: 700; color: #10b981; }
-.timeline-card .p-card-title { font-size: 16px; font-weight: 800; color: #ffffff; }
-.timeline-card .p-card-desc { font-size: 12px; color: #94a3b8; line-height: 1.6; flex-grow: 1; }
-
-/* Request Song Button inside Timeline Item */
-.timeline-request-btn { margin-top: 10px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: rgba(16, 185, 129, 0.1); border: 1px solid #10b981; color: #10b981; text-decoration: none; padding: 10px 16px; border-radius: 20px; font-size: 12px; font-weight: 700; transition: all 0.2s; }
-.timeline-request-btn:hover { background: #10b981; color: #ffffff; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3); }
-
-/* ==========================================================================
-   6. ROAD TO 3RD ANNIVERSARY COUNTDOWN
-   ========================================================================== */
-.anniversary-section { background: rgba(19, 19, 22, 0.7); backdrop-filter: blur(10px); width: 100%; padding: 26px 20px; text-align: center; border-radius: 24px; border: 1px solid rgba(16, 185, 129, 0.2); }
-.trio-bars { display: flex; justify-content: center; gap: 5px; margin-bottom: 12px; }
-.trio-bars .bar { width: 3.5px; height: 18px; background: #10b981; border-radius: 2px; }
-.anniversary-badge { background: rgba(16, 185, 129, 0.1); color: #10b981; font-size: 10px; font-weight: 800; letter-spacing: 2px; padding: 5px 14px; border-radius: 20px; display: inline-block; margin-bottom: 12px; }
-.anniversary-title { font-size: 24px; font-weight: 800; color: #fff; }
-.anniversary-slogan { font-size: 12px; color: #94a3b8; margin-bottom: 22px; }
-.countdown-display { display: flex; justify-content: center; align-items: center; gap: 10px; }
-.countdown-box { background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.05); min-width: 70px; padding: 12px; border-radius: 14px; display: flex; flex-direction: column; align-items: center; }
-.countdown-box span { font-size: 24px; font-weight: 800; color: #ffffff; }
-.countdown-box label { font-size: 10px; color: #64748b; font-weight: 700; text-transform: uppercase; margin-top: 2px; }
-
-/* ==========================================================================
-   7. INTERACTIVE BLUR AREA (LIVE CHAT & KUIS SELEKTIF)
-   ========================================================================== */
-.interactive-grid-section { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; width: 100%; }
-.quiz-card-box, .chat-card-box { background: #141417; border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 24px; height: 460px; display: flex; flex-direction: column; position: relative; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
-.box-inner-header { padding: 20px 24px; border-bottom: 1px solid rgba(255,255,255,0.04); background: rgba(255,255,255,0.01); }
-.box-inner-header h3 { font-size: 15px; font-weight: 800; color: #fff; }
-.box-inner-header p { font-size: 11px; color: #64748b; margin-top: 2px; }
-
-.feature-blur-lock { position: absolute; top: 65px; left: 0; width: 100%; height: calc(100% - 65px); background: rgba(20, 20, 23, 0.75); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); display: flex; align-items: center; justify-content: center; z-index: 10; padding: 30px; }
-.lock-inner-notice { text-align: center; max-width: 280px; }
-.lock-inner-notice i { font-size: 28px; color: #10b981; margin-bottom: 16px; background: rgba(16, 185, 129, 0.1); width: 60px; height: 60px; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; }
-.lock-inner-notice h4 { color: #fff; font-size: 15px; font-weight: 800; margin-bottom: 6px; }
-.lock-inner-notice p { color: #64748b; font-size: 12px; line-height: 1.6; }
-
-/* CHAT BOX ACTIVE AREA */
-.chat-body-content { display: flex; flex-direction: column; height: calc(100% - 65px); width: 100%; background: #111114; }
-.chat-scroller-area { flex-grow: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 14px; scroll-behavior: smooth; }
-.chat-msg-row { display: flex; gap: 10px; align-items: flex-start; max-width: 85%; animation: slideIn 0.2s ease-out; }
-.chat-msg-me { align-self: flex-end; flex-direction: row-reverse; max-width: 85%; }
-.chat-msg-avatar { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1px solid rgba(255,255,255,0.1); }
-.chat-msg-content-box { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); padding: 10px 14px; border-radius: 0 16px 16px 16px; display: flex; flex-direction: column; gap: 2px; }
-.chat-msg-me .chat-msg-content-box { background: #10b981; border-color: #10b981; border-radius: 16px 0 16px 16px; }
-.chat-msg-username { font-size: 11px; font-weight: 700; color: #64748b; }
-.chat-msg-me .chat-msg-username { color: rgba(255,255,255,0.7); }
-.chat-msg-text { font-size: 12.5px; color: #e2e8f0; line-height: 1.5; word-break: break-word; }
-.chat-msg-me .chat-msg-text { color: #fff; }
-
-.chat-input-bar { padding: 14px 20px; display: flex; gap: 10px; background: #141417; border-top: 1px solid rgba(255,255,255,0.04); }
-.chat-input-bar input { flex-grow: 1; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 30px; padding: 10px 20px; color: #fff; font-size: 13px; outline: none; }
-.chat-input-bar input::placeholder { color: #475569; }
-.chat-input-bar input:focus { border-color: #10b981; background: rgba(255,255,255,0.05); }
-.chat-input-bar button { width: 38px; height: 38px; border-radius: 50%; background: #10b981; border: none; color: #fff; font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s; }
-.chat-input-bar button:hover { background: #059669; }
-
-/* QUIZ BODY CONTENT STYLE */
-.quiz-body-content { padding: 24px; display: flex; flex-direction: column; justify-content: center; height: calc(100% - 65px); background: #111114; }
-.quiz-question-text { font-size: 16px; font-weight: 700; color: #fff; text-align: center; margin-bottom: 24px; line-height: 1.5; }
-.quiz-options-container { display: flex; flex-direction: column; gap: 10px; }
-.quiz-opt-btn { width: 100%; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); padding: 12px 20px; border-radius: 14px; color: #fff; font-size: 13px; font-weight: 600; text-align: left; cursor: pointer; transition: all 0.2s; }
-.quiz-opt-btn:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.2); }
-.quiz-opt-btn.correct-ans { background: rgba(16, 185, 129, 0.15) !important; border-color: #10b981 !important; color: #10b981 !important; }
-.quiz-opt-btn.wrong-ans { background: rgba(239, 68, 68, 0.15) !important; border-color: #ef4444 !important; color: #ef4444 !important; }
-.quiz-score-notice { font-size: 12px; color: #64748b; font-weight: 600; text-align: center; margin-top: 16px; }
-
-/* ==========================================================================
-   8. INTERACTIVE GOOGLE LOGIN OVERLAY MODAL
-   ========================================================================== */
-.login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(5, 5, 6, 0.85); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); display: flex; align-items: center; justify-content: center; z-index: 2000; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
-.login-overlay.show-modal { opacity: 1; pointer-events: auto; }
-.login-box-container { background: #141417; border: 1px solid rgba(255, 255, 255, 0.08); width: 100%; max-width: 400px; padding: 40px 30px; border-radius: 28px; position: relative; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); transform: scale(0.95); transition: transform 0.3s ease; }
-.login-overlay.show-modal .login-box-container { transform: scale(1); }
-.close-modal-x { position: absolute; top: 20px; right: 20px; background: none; border: none; color: #64748b; font-size: 24px; cursor: pointer; }
-.close-modal-x:hover { color: #fff; }
-.login-header-area { text-align: center; margin-bottom: 30px; }
-.login-brand-logo { width: 60px; height: 60px; object-fit: contain; margin-bottom: 16px; }
-.login-header-area h3 { color: #fff; font-size: 20px; font-weight: 800; margin-bottom: 8px; }
-.login-header-area p { color: #64748b; font-size: 12px; line-height: 1.5; padding: 0 10px; }
-.google-btn-wrapper { display: flex; justify-content: center; margin-bottom: 20px; min-height: 40px; }
-.login-status-msg { text-align: center; font-size: 12px; font-weight: 600; min-height: 18px; color: #64748b; }
-
-/* ==========================================================================
-   9. MAIN FOOTER COMPONENT (SELALU MENEMPEL DI BAWAH)
-   ========================================================================== */
-.station-footer { 
-    width: 100%; 
-    background: rgba(14, 14, 17, 0.9); 
-    backdrop-filter: blur(15px); 
-    border-top: 1px solid rgba(255,255,255,0.03); 
-    padding: 30px 0; 
-    margin-top: auto !important; 
-    flex-shrink: 0;
+/* ==========================================
+   VIDEO PLAYER & OVERLAY GAMBAR
+   ========================================== */
+.player-container {
+    background-color: #000000;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.footer-inner-wrapper { max-width: 1200px; margin: 0 auto; padding: 0 20px; display: flex; flex-direction: column; gap: 20px; }
-.footer-top-row { display: flex; justify-content: space-between; align-items: center; }
-.footer-brand-side { display: flex; align-items: center; gap: 14px; }
-.footer-mini-logo { width: 34px; height: 34px; object-fit: contain; }
-.footer-brand-side h4 { color: #fff; font-size: 13px; font-weight: 800; }
-.footer-brand-side p { color: #475569; font-size: 11px; margin-top: 1px; }
-.footer-clock-side { display: flex; align-items: center; gap: 16px; }
-.clock-item { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); padding: 6px 14px; border-radius: 20px; color: #94a3b8; font-size: 11px; font-weight: 700; display: flex; align-items: center; gap: 6px; }
-.clock-item span { color: #10b981; }
-.footer-divider { width: 100%; height: 1px; background: rgba(255,255,255,0.04); }
-
-/* BARIS BAWAH FOOTER (STATIONS + SOSMED) */
-.footer-bottom-row { display: flex; justify-content: space-between; align-items: center; gap: 20px; flex-wrap: wrap; }
-.footer-shortcut-grid { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
-.shortcut-label { font-size: 11px; color: #475569; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
-.footer-shortcut-link { display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.04); padding: 6px 14px; border-radius: 20px; text-decoration: none; transition: all 0.2s; }
-.footer-shortcut-link:hover { background: rgba(16,185,129,0.04); border-color: rgba(16,185,129,0.15); }
-.footer-shortcut-link img { width: 18px; height: 18px; border-radius: 50%; object-fit: cover; }
-.branch-name-tag { font-size: 11px; color: #94a3b8; font-weight: 600; }
-.footer-shortcut-link:hover .branch-name-tag { color: #ffffff; }
-
-/* STYLE TOMBOL SOSMED FOOTER */
-.footer-social-side { display: flex; align-items: center; gap: 12px; }
-.social-icons-wrapper { display: flex; align-items: center; gap: 8px; }
-.social-btn { width: 34px; height: 34px; border-radius: 50%; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); color: #94a3b8; display: flex; align-items: center; justify-content: center; text-decoration: none; font-size: 14px; transition: all 0.25s ease; }
-.social-btn:hover { color: #ffffff; transform: translateY(-3px); }
-
-/* EFEK WARNA UNTUK TIAP PLATFORM SOSMED SAAT HOVER */
-.social-btn.instagram:hover { background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%,#d6249f 60%,#285AEB 90%); border-color: transparent; }
-.social-btn.youtube:hover { background: #ff0000; border-color: #ff0000; }
-.social-btn.tiktok:hover { background: #000000; border-color: #00f2fe; box-shadow: -2px 2px 0 #00f2fe, 2px -2px 0 #fe2c55; }
-.social-btn.x-twitter:hover { background: #14171a; border-color: #ffffff; }
-.social-btn.facebook:hover { background: #1877f2; border-color: #1877f2; }
-
-@keyframes slideIn { from { transform: translateY(10px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-
-/* ==========================================================================
-   10. RESPONSIVE DESIGN ADJUSTMENTS
-   ========================================================================== */
-@media (max-width: 992px) {
-    .interactive-grid-section { grid-template-columns: 1fr; }
-    .quiz-card-box, .chat-card-box { height: 400px; }
-    .footer-top-row, .footer-bottom-row { flex-direction: column; text-align: center; justify-content: center; gap: 16px; }
-    .footer-social-side { justify-content: center; }
+:root {
+    --plyr-color-main: #ff4757;
+    --plyr-video-control-color: #ffffff;
+    --plyr-video-control-color-hover: #ff4757;
 }
 
-@media (max-width: 576px) {
-    body { 
-        padding-top: 140px !important; 
+.plyr {
+    border-radius: 12px;
+    aspect-ratio: 16/9;
+}
+
+#play-overlay {
+    background-color: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(4px);
+    z-index: 20;
+    transition: all 0.3s ease;
+}
+
+#start-stream-btn {
+    background-color: #ff4757;
+    border: none;
+    letter-spacing: 0.5px;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+#start-stream-btn:hover {
+    transform: scale(1.08);
+    background-color: #ff2e43;
+    box-shadow: 0 0 25px rgba(255, 71, 87, 0.7) !important;
+}
+
+#blackout-overlay {
+    background-color: #0d0d0e;
+    z-index: 30;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+#restriction-image {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+/* ==========================================
+   STYLING PROFIL PENGGUNA KUSTOM & LOGOUT
+   ========================================== */
+#profileAvatarPreview {
+    background-color: rgba(255, 255, 255, 0.05);
+    transition: transform 0.3s ease;
+}
+
+#profileAvatarPreview:hover {
+    transform: scale(1.05);
+}
+
+#btn-modal-logout {
+    transition: all 0.3s ease;
+    border-width: 2px;
+}
+
+#btn-modal-logout:hover {
+    background-color: #ff4757;
+    color: #ffffff;
+    box-shadow: 0 0 20px rgba(255, 71, 87, 0.5);
+}
+
+/* ==========================================
+   STYLING MODERN UI REPORT & AUTH MODAL
+   ========================================== */
+.auth-sidebar {
+    background: linear-gradient(135deg, #1f080a 0%, #0d0d0e 100%);
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.category-card {
+    background-color: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 14px;
+    padding: 12px 8px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+}
+
+.category-card:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 71, 87, 0.4);
+    transform: translateY(-3px);
+}
+
+.category-card.active {
+    background: linear-gradient(135deg, rgba(255, 71, 87, 0.2) 0%, rgba(255, 71, 87, 0.05) 100%);
+    border-color: #ff4757 !important;
+    box-shadow: 0 4px 15px rgba(255, 71, 87, 0.3);
+}
+
+.category-icon {
+    font-size: 1.25rem;
+    color: #a0a0a0;
+    transition: color 0.25s ease;
+}
+
+.category-card.active .category-icon,
+.category-card:hover .category-icon {
+    color: #ff4757;
+}
+
+.category-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #d1d1d1;
+    letter-spacing: 0.3px;
+}
+
+.modern-select, .modern-textarea {
+    background-color: rgba(255, 255, 255, 0.04) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    color: #ffffff !important;
+    border-radius: 12px !important;
+    font-size: 0.88rem;
+    transition: all 0.25s ease;
+}
+
+.modern-select option {
+    background-color: #1a1a1a;
+    color: #ffffff;
+}
+
+.modern-select:focus, .modern-textarea:focus {
+    border-color: #ff4757 !important;
+    box-shadow: 0 0 12px rgba(255, 71, 87, 0.3) !important;
+}
+
+.fs-7 { font-size: 0.75rem; }
+
+/* ==========================================
+   SIDEBAR DAFTAR TV
+   ========================================== */
+.channel-list {
+    max-height: 420px;
+    overflow-y: auto;
+    background-color: rgba(48, 48, 48, 0.88); /* SISTEM UBAH: Hitam yang lebih terang dari sebelumnya */
+    border-radius: 12px;
+    padding: 12px;
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.channel-item {
+    cursor: pointer;
+    padding: 12px 15px;
+    margin-bottom: 8px;
+    background-color: rgba(42, 42, 42, 0.9);
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    border-left: 4px solid transparent;
+}
+
+.channel-item:hover {
+    background-color: rgba(58, 58, 58, 0.9);
+    border-left-color: #ff4757;
+}
+
+.channel-item.active {
+    background-color: #ff4757;
+    color: #ffffff;
+    font-weight: bold;
+}
+
+.channel-item.expired-item { opacity: 0.75; }
+
+/* SISTEM UBAH: Pesan teks saat proses cari saluran tidak ditemukan */
+.no-channel-msg {
+    color: hsl(0, 4%, 95%); /* Silakan ganti kode warna ini sesuai selera (misal: #ffffff untuk putih terang) */
+    font-weight: 600;
+    letter-spacing: 0.3px;
+}
+
+/* ==========================================
+   STYLING AUTH CARD & MODAL
+   ========================================== */
+.auth-card {
+    border-radius: 20px !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8) !important;
+}
+
+.auth-sidebar-overlay {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: radial-gradient(circle at top left, rgba(255, 71, 87, 0.25), transparent 70%);
+    pointer-events: none;
+}
+
+.bg-dark-glass { background-color: hsla(56, 100%, 58%, 0.843); }
+
+.auth-tabs-wrapper {
+    display: flex;
+    background-color: rgba(255, 255, 255, 0.05);
+    padding: 4px;
+    border-radius: 50px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.auth-tab-btn {
+    border: none;
+    background: transparent;
+    color: #a0a0a0;
+    padding: 6px 18px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    border-radius: 50px;
+    transition: all 0.3s ease;
+}
+
+.auth-tab-btn.active {
+    background-color: #ff4757;
+    color: #ffffff;
+    box-shadow: 0 4px 15px rgba(255, 71, 87, 0.4);
+}
+
+.modern-input-group {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-icon {
+    position: absolute;
+    left: 14px;
+    color: #ff4757;
+    font-size: 0.95rem;
+    z-index: 5;
+}
+
+/* SISTEM UBAH: Input text kolom search dan modifikasi warna placeholder */
+.modern-input {
+    background-color: rgba(255, 255, 255, 0.08) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    color: #ffffff !important; /* Warna tulisan saat mengetik */
+    padding-left: 42px !important;
+    height: 44px;
+    border-radius: 12px !important;
+    font-size: 0.9rem;
+    transition: all 0.25s ease;
+}
+
+.modern-input:focus {
+    border-color: #ff4757 !important;
+    box-shadow: 0 0 12px rgba(255, 71, 87, 0.3) !important;
+    background-color: rgba(255, 255, 255, 0.07) !important;
+}
+
+.modern-input::placeholder {
+    color: #b0b0b0 !important; /* Warna teks placeholder pencarian */
+    opacity: 1;
+}
+
+.shadow-danger {
+    box-shadow: 0 6px 20px rgba(255, 71, 87, 0.35);
+    transition: all 0.3s ease;
+}
+
+.shadow-danger:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(255, 71, 87, 0.5);
+}
+
+.py-2-5 { padding-top: 10px; padding-bottom: 10px; }
+.text-light-50 { color: rgba(255, 255, 255, 0.65); }
+
+/* FOOTER & SCROLLBAR */
+.footer-custom {
+    background-color: #ff4f4fd2;
+    backdrop-filter: blur(5px);
+}
+
+.social-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background-color: #2a2a2a;
+    color: #ffffff;
+    border-radius: 50%;
+    font-size: 1.1rem;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.social-icon:hover {
+    background-color: #ff4757;
+    color: #ffffff;
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(255, 71, 87, 0.4);
+}
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #1a1a1a; }
+::-webkit-scrollbar-thumb { background: #ff4757; border-radius: 10px; }
+
+/* ==========================================
+   RESPONSIVE DESIGN & MOBILE OPTIMIZATION
+   ========================================== */
+
+/* 1. LAYAR TABLET & HP (Lebar < 992px) */
+@media (max-width: 991.98px) {
+    .navbar .container {
+        gap: 0.75rem !important;
     }
 
-    .header-inner { padding: 10px 14px; }
-    .station-name { font-size: 13px; }
-    .station-slogan { font-size: 9px; }
-    .login-trigger-btn span, .logout-action-btn span { display: none; }
-    .user-name-span { max-width: 60px; font-size: 11px; }
+    .channel-list {
+        max-height: 320px;
+    }
+}
 
-    .timeline-item { width: 280px; }
-    
-    .login-trigger-btn { padding: 6px 12px !important; border-radius: 20px !important; font-size: 11px !important; gap: 4px !important; }
-
-    /* PLAYER MELAYANG DI ATAS DENGAN JARAK DARI HEADER */
-    .prambors-style-player { 
-        position: fixed !important; 
-        top: 85px !important; 
-        bottom: auto !important; 
-        left: 50% !important; 
-        transform: translateX(-50%) !important; 
-        width: 90% !important; 
-        height: auto !important; 
-        background: #18181c !important; 
-        padding: 10px 16px !important; 
-        border-radius: 40px !important; 
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7) !important; 
-        margin-bottom: 0 !important; 
-        z-index: 999 !important; 
+/* 2. LAYAR HP / SMARTPHONE (Lebar < 768px) */
+@media (max-width: 767.98px) {
+    .timezone-clock-wrapper {
+        width: 100%;
+        justify-content: center;
+        order: 3;
+        margin-top: 4px;
+        padding: 6px 12px !important;
     }
 
-    .player-artwork-area { width: 45px !important; height: 45px !important; min-width: 45px !important; min-height: 45px !important; }
-    .player-info-area { margin-left: 12px !important; }
-    .listener-count { font-size: 9px !important; }
-    #song-title { font-size: 14px !important; max-width: 130px !important; }
-    #song-artist { font-size: 11px !important; }
-    .player-controls-area { gap: 12px !important; }
-    .volume-box { display: none !important; }
-    .play-pause-circle { width: 42px !important; height: 42px !important; min-width: 42px !important; min-height: 42px !important; font-size: 14px !important; }
+    .timezone-clock-wrapper .d-flex {
+        gap: 0.75rem !important;
+        font-size: 0.75rem !important;
+    }
 
-    .station-branch-selector { gap: 6px !important; margin-bottom: 8px !important; justify-content: flex-start; }
-    .branch-pill { padding: 4px 10px !important; font-size: 9px !important; border-radius: 12px !important; }
+    .clock-item {
+        padding-left: 0.5rem !important;
+    }
 
-    /* FOOTER KHUSUS HP (MEMASTIKAN TETAP DI BAWAH DENGEN JARAK PAS) */
-    .station-footer {
-        margin-top: auto !important;
-        padding-top: 25px !important;
-        padding-bottom: 30px !important;
+    #btn-open-report, #btn-auth-action {
+        padding: 6px 12px !important;
+        font-size: 0.75rem;
+    }
+
+    #start-stream-btn {
+        font-size: 0.85rem !important;
+        padding: 10px 18px !important;
+    }
+
+    .auth-card {
+        margin: 10px;
+    }
+
+    .category-filter-wrapper {
+        scroll-behavior: smooth;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .category-filter-wrapper::-webkit-scrollbar {
+        display: none;
+    }
+}
+
+/* 3. LAYAR SANGAT KECIL (Lebar < 400px) */
+@media (max-width: 399.98px) {
+    .brand-text {
+        font-size: 1.1rem !important;
+    }
+
+    .nav-buttons-wrapper button span {
+        display: none;
     }
 }

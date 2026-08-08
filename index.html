@@ -3,311 +3,388 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Endless For Beacon FM</title>
+    <title>Beacon TV - Streaming Platform</title>
 
-    <!-- FAVICON -->
-    <link class="icon" type="image/png" href="Image/Logo.png">
+    <!-- FAVICON LOGO BEACON TV -->
+    <link rel="icon" type="image/x-icon" href="Image/Beacon TV Logo.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="Image/Beacon TV Logo.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="Image/Beacon TV Logo.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="Image/Beacon TV Logo.png">
     
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Plyr Player CSS -->
+    <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
+    
+    <!-- Custom CSS -->
     <link rel="stylesheet" href="style.css">
+    
+    <!-- HLS.js & Plyr JS -->
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <script src="https://cdn.plyr.io/3.7.8/plyr.polyfilled.js"></script>
 
-    <!-- Google Identity Services SDK -->
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <!-- EmailJS SDK -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script type="text/javascript">
+       (function(){
+          emailjs.init("DGh43sRVucKMAVNin");
+       })();
+    </script>
 </head>
 <body>
 
-    <header class="main-header">
-        <div class="header-inner">
-            <div class="brand-container">
-                <img src="Image/Logo.png" alt="Beacon FM Logo" class="station-logo" id="header-station-logo">
-                <div class="brand-text">
-                    <span class="station-name" id="header-station-name">Endless For Beacon FM</span>
-                    <span class="station-slogan" id="header-station-slogan">The Smile Of The Stand Out For The Radio</span>
+    <!-- Header / Navigasi Navbar -->
+    <nav class="navbar navbar-dark bg-dark mb-4 border-bottom border-danger">
+        <div class="container d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <a class="navbar-brand d-flex align-items-center" href="#">
+                <img src="Image/Beacon TV Logo.png" alt="Beacon TV Logo" height="40" class="me-2" onerror="this.style.display='none'">
+                <span class="fs-4 fw-bold text-uppercase text-white brand-text">Beacon <span class="text-danger">TV</span></span>
+            </a>
+            
+            <!-- FITUR JAM 3 ZONA WAKTU INDONESIA (WIB, WITA, WIT) -->
+            <div class="timezone-clock-wrapper d-flex align-items-center gap-2 px-3 py-1 rounded-pill bg-dark-glass border border-secondary border-opacity-25">
+                <i class="fa-regular fa-clock text-danger"></i>
+                <div class="d-flex gap-3 small fw-bold">
+                    <span class="clock-item"><span class="text-muted">WIB:</span> <span id="clock-wib" class="text-white">00:00</span></span>
+                    <span class="clock-item border-start border-secondary ps-3"><span class="text-danger">WITA:</span> <span id="clock-wita" class="text-white">00:00</span></span>
+                    <span class="clock-item border-start border-secondary ps-3"><span class="text-muted">WIT:</span> <span id="clock-wit" class="text-white">00:00</span></span>
                 </div>
             </div>
 
-            <div class="header-action-container">
-                <!-- KONDISI AUTHENTICATION TERINTEGRASI -->
-                <div id="navbar-auth-section">
-                    <button id="nav-login-btn" class="login-trigger-btn" onclick="openLoginModal()">
-                        <i class="fas fa-sign-in-alt"></i> <span>Login</span>
+            <div class="d-flex align-items-center gap-2 nav-buttons-wrapper">
+                <!-- Tombol Laporkan Bug / Kendala -->
+                <button class="btn btn-outline-danger btn-sm rounded-pill px-3 fw-bold" id="btn-open-report">
+                    <i class="fa-solid fa-bug me-1"></i> <span>Laporkan Kendala</span>
+                </button>
+                
+                <!-- Tombol Login / User Profile -->
+                <button class="btn btn-danger btn-sm rounded-pill px-3 fw-bold d-flex align-items-center gap-2" id="btn-auth-action">
+                    <i class="fa-solid fa-right-to-bracket"></i> <span>Masuk</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Konten Utama -->
+    <div class="container">
+        <div class="row g-4">
+            <!-- Kolom Player Video (Kiri) -->
+            <div class="col-lg-8">
+                <div class="player-container position-relative">
+                    
+                    <!-- Player Video Plyr -->
+                    <video id="video-player" playsinline crossorigin></video>
+                    
+                    <!-- Overlay Play Normal -->
+                    <div id="play-overlay" class="position-absolute top-0 start-0 w-100 h-100 d-flex flex-column justify-content-center align-items-center">
+                        <button id="start-stream-btn" class="btn btn-danger btn-lg px-4 py-3 rounded-pill fw-bold shadow-lg d-flex align-items-center gap-2">
+                            <i class="fa-solid fa-play fs-4"></i> KLIK UNTUK MENONTON
+                        </button>
+                    </div>
+
+                    <!-- OVERLAY BACKGROUND GAMBAR PERINGATAN (AUTOMATIC BLACKOUT) -->
+                    <div id="blackout-overlay" class="position-absolute top-0 start-0 w-100 h-100 d-none justify-content-center align-items-center">
+                        <img id="restriction-image" src="" alt="Peringatan Pembatasan Siaran" class="w-100 h-100 object-fit-contain">
+                    </div>
+
+                </div>
+                
+                <!-- Detail Channel Terpilih & Action Bar -->
+                <div class="mt-3 d-flex justify-content-between align-items-start flex-wrap gap-2">
+                    <div>
+                        <h3 id="playing-title" class="fw-bold mb-1">Memuat Saluran...</h3>
+                        <p class="text-muted mb-0 small">Sistem Penayangan Digital Endless For Beacon.</p>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-sm btn-dark text-danger border-secondary" id="btn-report-channel">
+                            <i class="fa-solid fa-flag me-1"></i> Laporkan Saluran Ini
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Kolom Daftar Channel (Kanan) -->
+            <div class="col-lg-4">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h4 class="mb-0 text-danger fw-bold text-uppercase">Daftar Saluran</h4>
+                </div>
+
+                <!-- SEARCH BAR & FILTER KATEGORI -->
+                <div class="mb-3">
+                    <div class="modern-input-group mb-2">
+                        <i class="fa-solid fa-magnifying-glass input-icon"></i>
+                        <input type="text" id="search-channel-input" class="form-control modern-input" placeholder="Cari nama saluran TV...">
+                    </div>
+                    <div class="category-filter-wrapper d-flex gap-1 overflow-x-auto pb-1">
+                        <button class="btn btn-sm btn-outline-danger active rounded-pill px-3 filter-btn" data-category="all">Semua</button>
+                        <button class="btn btn-sm btn-outline-secondary text-light rounded-pill px-3 filter-btn" data-category="official">Official</button>
+                        <button class="btn btn-sm btn-outline-secondary text-light rounded-pill px-3 filter-btn" data-category="national">Nasional</button>
+                    </div>
+                </div>
+
+                <div class="channel-list" id="channels-container">
+                    <!-- Item TV dirender otomatis oleh JS -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL AUTH -->
+    <div class="modal fade" id="authModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content bg-dark text-light auth-card overflow-hidden">
+                <div class="row g-0">
+                    <div class="col-md-5 auth-sidebar d-none d-md-flex flex-column justify-content-between p-4 position-relative">
+                        <div class="auth-sidebar-overlay"></div>
+                        <div class="position-relative z-1">
+                            <span class="fs-4 fw-bold text-white">Beacon <span class="text-danger">TV</span></span>
+                        </div>
+                        <div class="position-relative z-1 mb-4">
+                            <h4 class="fw-bold text-white mb-2">Selamat Datang!</h4>
+                            <p class="text-light-50 small mb-0">Nikmati akses penayangan TV digital berkualitas dan terintegrasi di seluruh Indonesia.</p>
+                        </div>
+                    </div>
+
+                    <div class="col-md-7 p-4 p-lg-5 bg-dark-glass">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <div class="auth-tabs-wrapper">
+                                <button class="auth-tab-btn active" id="tab-login-btn">Masuk</button>
+                                <button class="auth-tab-btn" id="tab-register-btn">Daftar</button>
+                            </div>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+
+                        <div id="authAlert" class="alert d-none py-2 small fw-bold mb-3" role="alert"></div>
+
+                        <!-- Form Login -->
+                        <form id="loginForm">
+                            <div class="mb-3">
+                                <label class="form-label small text-muted">Email</label>
+                                <div class="modern-input-group">
+                                    <i class="fa-solid fa-envelope input-icon"></i>
+                                    <input type="email" class="form-control modern-input" id="loginEmail" placeholder="nama@email.com" required>
+                                </div>
+                            </div>
+                            <div class="mb-4">
+                                <label class="form-label small text-muted">Kata Sandi</label>
+                                <div class="modern-input-group">
+                                    <i class="fa-solid fa-lock input-icon"></i>
+                                    <input type="password" class="form-control modern-input" id="loginPassword" placeholder="••••••••" required>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-danger w-100 py-2-5 rounded-pill fw-bold shadow-danger">
+                                <i class="fa-solid fa-right-to-bracket me-1"></i> Masuk Sekarang
+                            </button>
+                        </form>
+
+                        <!-- Form Register -->
+                        <form id="registerForm" class="d-none">
+                            <div class="mb-3">
+                                <label class="form-label small text-muted">Nama Lengkap</label>
+                                <div class="modern-input-group">
+                                    <i class="fa-solid fa-user input-icon"></i>
+                                    <input type="text" class="form-control modern-input" id="regName" placeholder="Nama Anda" required>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label small text-muted">Email</label>
+                                <div class="modern-input-group">
+                                    <i class="fa-solid fa-envelope input-icon"></i>
+                                    <input type="email" class="form-control modern-input" id="regEmail" placeholder="nama@email.com" required>
+                                </div>
+                            </div>
+                            <div class="mb-4">
+                                <label class="form-label small text-muted">Kata Sandi</label>
+                                <div class="modern-input-group">
+                                    <i class="fa-solid fa-lock input-icon"></i>
+                                    <input type="password" class="form-control modern-input" id="regPassword" placeholder="Minimal 6 karakter" required>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-danger w-100 py-2-5 rounded-pill fw-bold shadow-danger">
+                                <i class="fa-solid fa-user-plus me-1"></i> Buat Akun
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL PROFIL PENGGUNA KUSTOM -->
+    <div class="modal fade" id="userProfileModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-dark text-light auth-card overflow-hidden">
+                <div class="modal-header border-bottom border-secondary border-opacity-25 pb-3">
+                    <h5 class="modal-title fw-bold d-flex align-items-center gap-2">
+                        <i class="fa-solid fa-id-card text-danger"></i> Profil Pengguna
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4 text-center">
+                    <!-- Avatar Preview -->
+                    <div class="position-relative d-inline-block mb-3">
+                        <img id="profileAvatarPreview" src="https://api.dicebear.com/7.x/bottts/svg?seed=BeaconUser" alt="Avatar" class="rounded-circle border border-2 border-danger shadow-lg" width="100" height="100" style="object-fit: cover;">
+                    </div>
+
+                    <form id="updateProfileForm">
+                        <div class="mb-3 text-start">
+                            <label class="form-label small text-muted fw-bold">NAMA TAMPILAN</label>
+                            <div class="modern-input-group">
+                                <i class="fa-solid fa-user input-icon"></i>
+                                <input type="text" class="form-control modern-input" id="profileDisplayName" placeholder="Nama Anda" required>
+                            </div>
+                        </div>
+
+                        <div class="mb-3 text-start">
+                            <label class="form-label small text-muted fw-bold">ALAMAT EMAIL</label>
+                            <div class="modern-input-group">
+                                <i class="fa-solid fa-envelope input-icon"></i>
+                                <input type="email" class="form-control modern-input text-muted" id="profileEmail" disabled readonly>
+                            </div>
+                        </div>
+
+                        <div class="mb-4 text-start">
+                            <label class="form-label small text-muted fw-bold">PILIH GAYA AVATAR</label>
+                            <select class="form-select modern-select" id="profileAvatarSeed">
+                                <option value="BeaconUser">Avatar Classic</option>
+                                <option value="Cyber">Avatar Cyber</option>
+                                <option value="Gamer">Avatar Gamer</option>
+                                <option value="Radio">Avatar Broadcaster</option>
+                                <option value="Hero">Avatar Edge</option>
+                            </select>
+                        </div>
+
+                        <div id="profileAlert" class="alert d-none py-2 small fw-bold mb-3" role="alert"></div>
+
+                        <!-- Tombol Simpan Perubahan -->
+                        <button type="submit" class="btn btn-danger w-100 py-2-5 rounded-pill fw-bold shadow-danger mb-3 d-flex align-items-center justify-content-center gap-2">
+                            <i class="fa-solid fa-floppy-disk"></i> Simpan Profil
+                        </button>
+                    </form>
+
+                    <hr class="border-secondary border-opacity-25 my-3">
+
+                    <!-- TOMBOL KHUSUS LOGOUT DENGAN IKON KELUAR -->
+                    <button type="button" class="btn btn-outline-danger w-100 py-2-5 rounded-pill fw-bold d-flex align-items-center justify-content-center gap-2" id="btn-modal-logout">
+                        <i class="fa-solid fa-right-from-bracket fs-5"></i> Keluar Dari Beacon TV
                     </button>
                 </div>
             </div>
         </div>
-    </header>
-
-    <div class="main-content-wrapper">
-        
-        <!-- CAPSULE STREAMING PLAYER DENGAN BRANCH SELECTOR -->
-        <div class="prambors-style-player">
-            <div class="player-artwork-area">
-                <img src="Image/Logo.png" alt="Artwork" id="radio-logo">
-            </div>
-            
-            <div class="player-info-area">
-                <!-- PILIHAN CABANG STASIUN -->
-                <div class="station-branch-selector">
-                    <button class="branch-pill active" onclick="switchStation('makassar')" id="pill-makassar">Makassar</button>
-                    <button class="branch-pill" onclick="switchStation('denpasar')" id="pill-denpasar">Denpasar</button>
-                    <button class="branch-pill" onclick="switchStation('surabaya')" id="pill-surabaya">Surabaya</button>
-                </div>
-                <div class="listener-count" id="live-indicator">🔴 SIARAN LANGSUNG - MAKASSAR</div>
-                <h1 id="song-title">Memuat Judul...</h1>
-                <p id="song-artist">Endless For Beacon FM</p>
-            </div>
-            
-            <div class="player-controls-area">
-                <div class="volume-box">
-                    <span class="vol-icon">🔈</span>
-                    <input type="range" id="volume" class="volume-slider" min="0" max="1" step="0.05" value="0.8">
-                </div>
-                <button id="play-btn" class="play-pause-circle">▶</button>
-            </div>
-        </div>
-
-        <!-- JADWAL PROGRAM ACARA (HORIZONTAL TIMELINE) -->
-        <section class="schedule-timeline-section">
-            <div class="section-header">
-                <span class="section-tagline">📅 STATION PROGRAM</span>
-                <h2 class="section-main-title">Jadwal Program Acara Endless For Beacon FM</h2>
-            </div>
-            
-            <div class="timeline-container">
-                <div class="timeline-track">
-                    <!-- Item Timeline 1 -->
-                    <div class="timeline-item">
-                        <div class="timeline-marker"></div>
-                        <div class="timeline-card">
-                            <div class="p-card-banner">
-                                <img src="Image/Program/Morning Brew.png" alt="Morning Brew Banner" onerror="this.src='Image/Logo.png'">
-                            </div>
-                            <div class="p-card-content">
-                                <div class="p-card-time">Senin - Jumat 🕒 08:00 - 12:00 WITA</div>
-                                <h3 class="p-card-title">Morning Brew</h3>
-                                <p class="p-card-desc">Sebuah Program Utama Di Pagi Hari Yang Akan Memulai pagi kamu dengan asupan semangat yang tepat! Morning Brew hadir nemenin Beacon Listeners Untuk scrolling linimasa, bersiap ke sekolah, kampus, atau ngejar deadline kantor. Disini kita muterin playlist penuh energi, bahas tren pop culture yang lagi viral, info game terbaru, hingga obrolan kocak seputar keseharian. Booster paling pas buat mengubah pagi yang mager jadi penuh ambisi!</p>
-                                <a href="https://wa.me/6285257448582?text=Halo%20Endless%20For%20Beacon%20FM%21%20Saya%20Mau%20Request%20Lagu%20Untuk%20Program%20Morning%20Brew%3A%0A%0AJudul%20Lagu%3A+%0APenyanyi%3A+&" target="_blank" class="timeline-request-btn">
-                                    <i class="fab fa-whatsapp"></i> Request Lagu
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Item Timeline 2 -->
-                    <div class="timeline-item highlight">
-                        <div class="timeline-marker"></div>
-                        <div class="timeline-card">
-                            <div class="p-card-banner">
-                                <img src="Image/Program/Screen To Sounds.png" alt="Screen To Sounds Banner" onerror="this.src='Image/Logo.png'">
-                            </div>
-                            <div class="p-card-content">
-                                <div class="p-card-time">Senin - Jumat 🕒 17:00 - 20:00 WITA</div>
-                                <h3 class="p-card-title">Screen To Sounds</h3>
-                                <p class="p-card-desc">Program Acara Di Sore Hari Yang Bisa Ubah momen sore kamu jadi lebih sinematik! Program ini pas banget buat nemenin Beacon Listeners yang baru kelar jam sekolah, pulang ngampus, atau selesai beraktivitas. Kita bakal menjelajahi dunia sinema lewat soundtrack film Box Office legendaris, lagu hits dari series yang lagi trending, hingga musik tema game open-world favoritmu. Teman terbaik di kala nongkrong sore atau di tengah kemacetan kota.</p>
-                                <a href="https://wa.me/6285257448582?text=Halo%20Endless%20For%20Beacon%20FM%21%20Saya%20Mau%20Request%20Lagu%20Untuk%20Program%20Screen%20To%20Sounds%3A%0A%0AJudul%20Lagu%3A+%0APenyanyi%3A+&" target="_blank" class="timeline-request-btn">
-                                    <i class="fab fa-whatsapp"></i> Request Lagu
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Item Timeline 3 -->
-                    <div class="timeline-item">
-                        <div class="timeline-marker"></div>
-                        <div class="timeline-card">
-                            <div class="p-card-banner">
-                                <img src="Image/Program/Endless For Beacon Throwback.jpeg" alt="Thursday Throwback Banner" onerror="this.src='Image/Logo.png'">
-                            </div>
-                            <div class="p-card-content">
-                                <div class="p-card-time">Setiap Kamis 🕒 10:00 - 19:00 WITA</div>
-                                <h3 class="p-card-title">Endless For Beacon Throwback</h3>
-                                <p class="p-card-desc">Ini Dia Program Segmen Andalannya Endless For Beacon FM setiap hari Kamis! Kita bakal muter mesin waktu buat menyajikan lagu-lagu terbaik dari era 90-an Ke Atas, 2000-an, Sampai tahun 2018 ke bawah. Siap-siap Deh Beacon Listeners Bernostalgia total bareng vibe jaman MTV Indonesia, masa kejayaan warnet dan rental PS, sampai memori manis masa sekolah yang penuh cerita. Penuh energi dan sing-along seharian!</p>
-                                <a href="https://wa.me/6285257448582?text=Halo%20Endless%20For%20Beacon%20FM%21%20Saya%20Mau%20Request%20Lagu%20Untuk%20Program%20Throwback%3A%0A%0AJudul%20Lagu%3A+%0APenyanyi%3A+&" target="_blank" class="timeline-request-btn">
-                                    <i class="fab fa-whatsapp"></i> Request Lagu
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Item Timeline 4 -->
-                    <div class="timeline-item">
-                        <div class="timeline-marker"></div>
-                        <div class="timeline-card">
-                            <div class="p-card-banner">
-                                <img src="Image/Program/Asia Pop 40.jpg" alt="Asia Pop 40 Banner" onerror="this.src='Image/Logo.png'">
-                            </div>
-                            <div class="p-card-content">
-                                <div class="p-card-time">Sabtu & Minggu 🕒 07:00 - 10:00 WITA</div>
-                                <h3 class="p-card-title">Asia Pop 40</h3>
-                                <p class="p-card-desc">Asia Pop 40 (AP40) adalah program chart countdown radio mingguan regional pertama di Asia yang menghitung mundur 40 lagu terpopuler berdasarkan data streaming platform musik seperti Spotify, Apple Music, TikTok, dan YouTube. Disiarkan melalui stasiun radio mitra di seluruh kawasan Asia-Pasifik, program sindikasi ini menyajikan deretan lagu hits internasional dan lokal Asia, wawancara eksklusif artis global, serta ulasan lagu-lagu rilisan terbaru.</p>
-                                <a href="https://wa.me/6285257448582?text=Halo%20Endless%20For%20Beacon%20FM%21%20Saya%20Mau%20Request%20Lagu%20Untuk%20Program%20Asia%20Pop%2040%3A%0A%0AJudul%20Lagu%3A+%0APenyanyi%3A+&" target="_blank" class="timeline-request-btn">
-                                    <i class="fab fa-whatsapp"></i> Request Lagu
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- ROAD TO 3RD ANNIVERSARY COUNTDOWN -->
-        <section class="anniversary-section">
-            <div class="trio-bars">
-                <div class="bar"></div>
-                <div class="bar"></div>
-                <div class="bar"></div>
-            </div>
-            <span class="anniversary-badge">ANNIVERSARY COUNTDOWN</span>
-            <h2 class="anniversary-title">Road To 3rd Anniversary Endless For Beacon FM</h2>
-            <p class="anniversary-slogan">Terus Bersama Menjadi Bagian dari Senyuman Radio yang Berdiri Keluar!</p>
-            
-            <div class="countdown-display">
-                <div class="countdown-box">
-                    <span id="days">00</span>
-                    <label>Hari</label>
-                </div>
-                <div class="countdown-box">
-                    <span id="hours">00</span>
-                    <label>Jam</label>
-                </div>
-                <div class="countdown-box">
-                    <span id="minutes">00</span>
-                    <label>Menit</label>
-                </div>
-                <div class="countdown-box">
-                    <span id="seconds">00</span>
-                    <label>Detik</label>
-                </div>
-            </div>
-        </section>
-
-        <!-- INTERACTIVE LAYER (LIVE CHAT & KUIS SELEKTIF) -->
-        <div class="interactive-grid-section">
-            <!-- BOX KUIS -->
-            <div class="quiz-card-box">
-                <div class="box-inner-header">
-                    <h3>🎯 Kuis Interaktif</h3>
-                    <p>Uji pengetahuanmu dan kumpulkan poin!</p>
-                </div>
-                <div id="quiz-auth-lock" class="feature-blur-lock">
-                    <div class="lock-inner-notice">
-                        <i class="fas fa-lock"></i>
-                        <h4>Fitur Terkunci</h4>
-                        <p>Silakan login menggunakan Akun Google terlebih dahulu di bar navigasi atas untuk mengikuti kuis seru.</p>
-                    </div>
-                </div>
-                <div id="quiz-active-area" class="quiz-body-content" style="display:none;">
-                    <!-- Diisi dinamis oleh JavaScript -->
-                </div>
-            </div>
-
-            <!-- BOX LIVE CHAT -->
-            <div class="chat-card-box">
-                <div class="box-inner-header">
-                    <h3>💬 Live Chat Room</h3>
-                    <p>Obrolan real-time sesama Beacon Listeners</p>
-                </div>
-                <div id="chat-auth-lock" class="feature-blur-lock">
-                    <div class="lock-inner-notice">
-                        <i class="fas fa-lock"></i>
-                        <h4>Fitur Terkunci</h4>
-                        <p>Silakan login terlebih dahulu untuk bergabung ke dalam obrolan hangat komunitas kami.</p>
-                    </div>
-                </div>
-                <div id="chat-active-area" class="chat-body-content" style="display:none;">
-                    <div id="chat-box-messages" class="chat-scroller-area"></div>
-                    <div class="chat-input-bar">
-                        <input type="text" id="chat-input-field" placeholder="Ketik pesan kamu di sini...">
-                        <button id="send-chat-btn"><i class="fas fa-paper-plane"></i></button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
     </div>
 
-    <!-- MAIN FOOTER STATION BRANCHES & SOCIAL MEDIA -->
-    <footer class="station-footer">
-        <div class="footer-inner-wrapper">
-            <div class="footer-top-row">
-                <div class="footer-brand-side">
-                    <img src="Image/Logo.png" alt="Footer Logo" class="footer-mini-logo" id="footer-station-logo">
-                    <div>
-                        <h4 id="footer-station-name">Endless For Beacon FM</h4>
-                        <p>© 2026 Endless For Beacon Corp. Hak Cipta Dilindungi.</p>
+    <!-- MODAL REPORT -->
+    <div class="modal fade" id="reportModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content bg-dark text-light auth-card overflow-hidden">
+                <div class="row g-0">
+                    <div class="col-md-4 auth-sidebar d-none d-md-flex flex-column justify-content-between p-4 position-relative">
+                        <div class="auth-sidebar-overlay"></div>
+                        <div class="position-relative z-1">
+                            <span class="badge bg-danger px-3 py-2 rounded-pill fw-bold mb-2">
+                                <i class="fa-solid fa-headset me-1"></i> SUPPORT CENTER
+                            </span>
+                            <h4 class="fw-bold text-white mt-2">Pusat Kendala & Bug</h4>
+                            <p class="text-light-50 small mb-0 mt-2">
+                                Temukan bug atau siaran bermasalah? Laporkan agar tim teknis Beacon TV Support bisa segera membereskannya!
+                            </p>
+                        </div>
+                        <div class="position-relative z-1">
+                            <div class="p-3 rounded-4 bg-dark-glass border border-secondary border-opacity-25">
+                                <div class="d-flex align-items-center gap-2 text-warning small fw-bold mb-1">
+                                    <i class="fa-solid fa-bolt"></i> Respon Cepat
+                                </div>
+                                <div class="text-light-50 fs-7">Laporan Anda akan terkirim langsung ke inbox Email Support Beacon TV.</div>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <div class="footer-clock-side">
-                    <div class="clock-item"><i class="far fa-clock"></i> WIB: <span id="clock-wib">00:00:00</span></div>
-                    <div class="clock-item"><i class="far fa-clock"></i> WITA: <span id="clock-wita">00:00:00</span></div>
-                    <div class="clock-item"><i class="far fa-clock"></i> WIT: <span id="clock-wit">00:00:00</span></div>
+
+                    <div class="col-md-8 p-4 p-lg-4 bg-dark-glass position-relative">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="fw-bold text-white mb-0 d-flex align-items-center gap-2">
+                                <i class="fa-solid fa-triangle-exclamation text-danger"></i> Kirimkan Laporan
+                            </h5>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+
+                        <form id="reportForm">
+                            <label class="form-label small text-muted fw-bold mb-2">PILIH KATEGORI MASALAH <span class="text-danger">*</span></label>
+                            <div class="row g-2 mb-3">
+                                <div class="col-4">
+                                    <div class="category-card" data-category="system_bug">
+                                        <i class="fa-solid fa-bug category-icon"></i>
+                                        <span class="category-label">Bug System</span>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="category-card" data-category="stream_issue">
+                                        <i class="fa-solid fa-tv category-icon"></i>
+                                        <span class="category-label">Kendala TV</span>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="category-card" data-category="other_issue">
+                                        <i class="fa-solid fa-comment-dots category-icon"></i>
+                                        <span class="category-label">Lainnya</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <input type="hidden" id="reportCategory" required>
+
+                            <div class="mb-3 d-none" id="channelSelectContainer">
+                                <label class="form-label small text-muted fw-bold">SALURAN TERDAMPAK</label>
+                                <div class="modern-input-group">
+                                    <input type="text" class="form-control modern-input text-danger fw-bold" id="reportChannelName" readonly>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="reportType" class="form-label small text-muted fw-bold">JENIS KENDALA <span class="text-danger">*</span></label>
+                                <select class="form-select modern-select" id="reportType" required disabled>
+                                    <option value="" selected disabled>-- Pilih Kategori Di Atas Terlebih Dahulu --</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="reportDescription" class="form-label small text-muted fw-bold">DETAIL MASALAH <span class="text-danger">*</span></label>
+                                <textarea class="form-control modern-textarea" id="reportDescription" rows="3" placeholder="Jelaskan secara singkat kendala yang Anda temukan..." required></textarea>
+                            </div>
+
+                            <div id="reportAlert" class="alert d-none py-2 small fw-bold mb-3" role="alert"></div>
+
+                            <button type="submit" class="btn btn-danger w-100 py-2-5 rounded-pill fw-bold shadow-danger d-flex align-items-center justify-content-center gap-2" id="btnSubmitReport">
+                                <i class="fa-solid fa-paper-plane"></i> Kirim Laporan
+                            </button>
+                        </form>
+                    </div>
+
                 </div>
             </div>
-            
-            <div class="footer-divider"></div>
-            
-            <div class="footer-bottom-row">
-                <div class="footer-shortcut-grid">
-                    <span class="shortcut-label">Our Stations:</span>
-                    <a href="javascript:void(0)" onclick="switchStation('makassar')" class="footer-shortcut-link">
-                        <img src="Image/Logo.png" alt="Makassar">
-                        <span class="branch-name-tag">Makassar (Main)</span>
-                    </a>
-                    <a href="javascript:void(0)" onclick="switchStation('denpasar')" class="footer-shortcut-link">
-                        <img src="Image/Endless For Beacon FM Denpasar.png" alt="Denpasar" onerror="this.src='Image/Logo.png'">
-                        <span class="branch-name-tag">Endless For Beacon FM Denpasar</span>
-                    </a>
-                    <a href="javascript:void(0)" onclick="switchStation('surabaya')" class="footer-shortcut-link">
-                        <img src="Image/Endless For Beacon FM Surabaya.png" alt="Surabaya" onerror="this.src='Image/Logo.png'">
-                        <span class="branch-name-tag">Endless For Beacon FM Surabaya</span>
-                    </a>
-                </div>
+        </div>
+    </div>
 
-                <!-- PENAMBAHAN SOSIAL MEDIA DI FOOTER -->
-                <div class="footer-social-side">
-                    <span class="shortcut-label">Follow Us:</span>
-                    <div class="social-icons-wrapper">
-                        <a href="https://instagram.com/" target="_blank" aria-label="Instagram" class="social-btn instagram">
-                            <i class="fab fa-instagram"></i>
-                        </a>
-                        <a href="https://youtube.com/" target="_blank" aria-label="YouTube" class="social-btn youtube">
-                            <i class="fab fa-youtube"></i>
-                        </a>
-                        <a href="https://tiktok.com/" target="_blank" aria-label="TikTok" class="social-btn tiktok">
-                            <i class="fab fa-tiktok"></i>
-                        </a>
-                        <a href="https://x.com/" target="_blank" aria-label="X (Twitter)" class="social-btn x-twitter">
-                            <i class="fab fa-x-twitter"></i>
-                        </a>
-                        <a href="https://facebook.com/" target="_blank" aria-label="Facebook" class="social-btn facebook">
-                            <i class="fab fa-facebook-f"></i>
-                        </a>
-                    </div>
-                </div>
+    <!-- Footer -->
+    <footer class="footer-custom mt-5 border-top border-secondary py-4">
+        <div class="container d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
+            <div class="footer-copyright text-center text-md-start">
+                <p class="mb-0 text-muted">© 2026 <strong>Endless For Beacon Corp</strong>. All Rights Reserved.</p>
+            </div>
+            <div class="footer-social d-flex gap-3">
+                <a href="https://www.instagram.com/endless_for.beacon/" class="social-icon" title="Instagram"><i class="fa-brands fa-instagram"></i></a>
+                <a href="https://www.youtube.com/@EndlessForBeacon" class="social-icon" title="YouTube"><i class="fa-brands fa-youtube"></i></a>
+                <a href="https://www.tiktok.com/@endless.for_beacon06/" class="social-icon" title="TikTok"><i class="fa-brands fa-tiktok"></i></a>
             </div>
         </div>
     </footer>
 
-    <!-- MODAL GOOGLE SIGN-IN BOX -->
-    <div id="login-modal" class="login-overlay">
-        <div class="login-box-container">
-            <button id="close-login-btn" class="close-modal-x">&times;</button>
-            <div class="login-header-area">
-                <img src="Image/Logo.png" alt="Logo" class="login-brand-logo">
-                <h3>Endless For Beacon FM</h3>
-                <p>Masuk untuk mengakses fitur interaktif dari Endless For Beacon FM</p>
-            </div>
-            <div class="google-btn-wrapper">
-                <div id="google-login-btn"></div>
-            </div>
-            <div id="login-message" class="login-status-msg"></div>
-        </div>
-    </div>
-
-    <script src="script.js"></script>
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Script Utama JavaScript -->
+    <script type="module" src="script.js"></script>
 </body>
 </html>
